@@ -13,7 +13,10 @@ import minify from 'express-minify';
 
 const app = express();
 
-app.use(minify());
+app.use(minify({
+    cache: false, // Caching in memory
+    js_match: /.+\.js/
+}));
 app.use('/static', express.static(path.join(__dirname, '../static')));
 
 app.use('/user', UserRouter);
@@ -52,7 +55,7 @@ const hostProd = () => {
         .listen(443);
 };
 
-const server = process.env.PORT ? hostDev() : hostProd();
+const server = process.env.NODE_ENV === 'production' ? hostProd() : hostDev();
 
 server.on('listening', () => {
     console.log(`Listening on port ${(server.address() as AddressInfo).port}`);
