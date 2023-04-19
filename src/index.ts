@@ -6,6 +6,9 @@ import DBClient, { DB } from './util/db';
 import { AddressInfo } from 'net';
 import UserRouter from './paths/user';
 import path from 'path';
+import https from 'https';
+import http from 'http';
+import fs from 'fs';
 
 const app = express();
 
@@ -14,19 +17,41 @@ app.use('/static', express.static(path.join(__dirname, '../static')));
 app.use('/user', UserRouter);
 
 app.use((req, res) => {
-    res.status(404).end("Not Found");
+    res.status(404).end('Not Found');
 });
 
 DBClient.once('connectionReady', () => {
     console.log('MongoDB Ready');
 });
 
-// Start listening for requests once the DB is ready
-const server = app.listen(process.env.PORT, () => {
-    console.log(`Listening on port ${(server.address() as AddressInfo).port}`);
-});
-
 process.on('SIGTERM', () => {
     DBClient.close();
     server.close();
+});
+
+const hostDev = () => {
+    return app.listen(process.env.PORT);
+};
+
+const hostProd = () => {
+    http.createServer((req, res) => {
+        res.writeHead(302, 'Found', { Location: `https://${req.headers.host}${req.url}` });
+    }).listen(80);
+
+    return https
+        .createServer(
+            {
+                cert: fs.readFileSync('../certificate.crt'),
+                key: fs.readFileSync('../private.key'),
+                ca: [fs.readFileSync('../ca_bundle.crt')]
+            },
+            app
+        )
+        .listen(443);
+};
+
+const server = process.env.PORT ? hostDev() : hostProd();
+
+server.on('listening', () => {
+    console.log(`Listening on port ${(server.address() as AddressInfo).port}`);
 });
