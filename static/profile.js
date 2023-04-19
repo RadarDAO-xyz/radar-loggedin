@@ -91,7 +91,7 @@ async function fetchProfileData() {
 
     document.getElementById('signal-counter').textContent = data.total_shared;
 
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < data.top_five.length; i++) {
         createTop5Div(data.top_five[i].name, data.top_five[i].count);
     }
     removeFirstTop5();
