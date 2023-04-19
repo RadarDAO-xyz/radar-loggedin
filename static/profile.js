@@ -250,12 +250,26 @@ function noneFoundFill() {
         });
 }
 
+function searchingFill() {
+    for (let i = 0; i < 6; i++)
+        createLinkResourceB({
+            tldr: 'Searching for your signals...',
+            source: '',
+            curator: 'Curator',
+            smallCopy: "We're lookin!",
+            url: '',
+            discordURL: ``,
+            tags: []
+        });
+}
+
 function clearLinkResources() {
     const nodes = [...document.getElementById('resource-stack').childNodes.values()];
     nodes.filter(n => n.style.display !== 'none').forEach(node => node.remove());
 }
 
 async function fetchProfileData() {
+    searchingFill();
     const user = await getUser();
     document.getElementById('profilename').textContent = user.username;
     const data = await fetch(`https://${API}/user/${user.id}`).then(r => r.json());
@@ -267,18 +281,10 @@ async function fetchProfileData() {
     }
     removeOriginalTop5();
 
+    clearLinkResources();
     if (data.signals.length > 0) {
         data.signals.forEach(x => {
             createLinkResource(x);
-            // createLinkResource({
-            //     tldr: x.data.title,
-            //     source: DomainREGEX.exec(x.data.url)?.values()[1],
-            //     curator: x.message.data.author.username,
-            //     smallCopy: x.data.description,
-            //     url: x.data.url,
-            //     discordURL: `https://discord.com/channels/913873017287884830/${x.channel_id}/${x.message_id}`,
-            //     tags: x.tags || []
-            // });
         });
     } else {
         noneFoundFill();
@@ -291,6 +297,7 @@ document.getElementById('disabled-form').addEventListener('submit', async ev => 
     ev.preventDefault();
 
     clearLinkResources();
+    searchingFill();
 
     const user = await getUser();
 
@@ -300,18 +307,11 @@ document.getElementById('disabled-form').addEventListener('submit', async ev => 
         )}`
     ).then(r => r.json());
 
+    clearLinkResources();
+
     if (data.signals.length > 0) {
         data.signals.forEach(x => {
             createLinkResource(x);
-            // createLinkResource({
-            //     tldr: x.data.title,
-            //     source: DomainREGEX.exec(x.data.url)?.values()[1],
-            //     curator: x.message.data.author.username,
-            //     smallCopy: x.data.description,
-            //     url: x.data.url,
-            //     discordURL: `https://discord.com/channels/913873017287884830/${x.channel_id}/${x.message_id}`,
-            //     tags: x.tags
-            // });
         });
     } else {
         noneFoundFill();
