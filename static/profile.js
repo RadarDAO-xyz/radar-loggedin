@@ -60,7 +60,7 @@ function createLinkResource({ tldr, source, curator, smallCopy, url, discordURL,
     block.appendChild(curatorDiv);
     // #endregion
     // #region expander
-    const expanderDiv = document.getElementsByClassName('resource-expand')[0].cloneNode();
+    const expanderDiv = document.getElementsByClassName('resource-expand')[0].cloneNode(true);
     const expandedContent = expanderDiv.lastChild;
     const smallCopyElm = expandedContent.firstChild.firstChild;
     smallCopyElm.textContent = smallCopy;
@@ -111,6 +111,7 @@ async function fetchProfileData() {
 
 // Disable form submission
 document.getElementById('disabled-form').addEventListener('submit', async ev => {
+    console.log('a');
     ev.preventDefault();
 
     clearLinkResources();
@@ -123,17 +124,29 @@ document.getElementById('disabled-form').addEventListener('submit', async ev => 
         )}`
     ).then(r => r.json());
 
-    data.signals.forEach(x => {
-        createLinkResource({
-            tldr: x.data.title,
-            source: DomainREGEX.exec(x.data.url)?.values()[1],
-            curator: x.message.data.author.username,
-            smallCopy: x.data.description,
-            url: x.data.url,
-            discordURL: `https://discord.com/channels/913873017287884830/${x.channel_id}/${x.message_id}`,
-            tags: x.tags
+    if (data.signals.length > 0) {
+        data.signals.forEach(x => {
+            createLinkResource({
+                tldr: x.data.title,
+                source: DomainREGEX.exec(x.data.url)?.values()[1],
+                curator: x.message.data.author.username,
+                smallCopy: x.data.description,
+                url: x.data.url,
+                discordURL: `https://discord.com/channels/913873017287884830/${x.channel_id}/${x.message_id}`,
+                tags: x.tags
+            });
         });
-    });
+    } else {
+        for (let i = 0; i < 6; i++) createLinkResource({
+            tldr: "No signals Found!",
+            source: '',
+            curator: "Curator",
+            smallCopy: "The search parameters you have provided do not point to any signals!",
+            url: '',
+            discordURL: ``,
+            tags: []
+        });
+    }
 });
 
 fetchProfileData();
