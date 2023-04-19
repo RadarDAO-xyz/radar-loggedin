@@ -79,6 +79,19 @@ function createLinkResource({ tldr, source, curator, smallCopy, url, discordURL,
     document.getElementById('resource-stack').appendChild(block);
 }
 
+function noneFoundFill() {
+    for (let i = 0; i < 6; i++)
+        createLinkResource({
+            tldr: 'No signals Found!',
+            source: '',
+            curator: 'Curator',
+            smallCopy: 'The search parameters you have provided do not point to any signals!',
+            url: '',
+            discordURL: ``,
+            tags: []
+        });
+}
+
 function clearLinkResources() {
     const nodes = [...document.getElementById('resource-stack').childNodes.values()];
     nodes.filter(n => n.style.display !== 'none').forEach(node => node.remove());
@@ -96,17 +109,21 @@ async function fetchProfileData() {
     }
     removeFirstTop5();
 
-    data.signals.forEach(x => {
-        createLinkResource({
-            tldr: x.data.title,
-            source: DomainREGEX.exec(x.data.url)?.values()[1],
-            curator: x.message.data.author.username,
-            smallCopy: x.data.description,
-            url: x.data.url,
-            discordURL: `https://discord.com/channels/913873017287884830/${x.channel_id}/${x.message_id}`,
-            tags: x.tags
+    if (data.signals.length > 0) {
+        data.signals.forEach(x => {
+            createLinkResource({
+                tldr: x.data.title,
+                source: DomainREGEX.exec(x.data.url)?.values()[1],
+                curator: x.message.data.author.username,
+                smallCopy: x.data.description,
+                url: x.data.url,
+                discordURL: `https://discord.com/channels/913873017287884830/${x.channel_id}/${x.message_id}`,
+                tags: x.tags
+            });
         });
-    });
+    } else {
+        noneFoundFill();
+    }
 }
 
 // Disable form submission
@@ -137,15 +154,7 @@ document.getElementById('disabled-form').addEventListener('submit', async ev => 
             });
         });
     } else {
-        for (let i = 0; i < 6; i++) createLinkResource({
-            tldr: "No signals Found!",
-            source: '',
-            curator: "Curator",
-            smallCopy: "The search parameters you have provided do not point to any signals!",
-            url: '',
-            discordURL: ``,
-            tags: []
-        });
+        noneFoundFill();
     }
 });
 
