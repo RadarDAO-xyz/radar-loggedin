@@ -106,6 +106,8 @@ document.getElementById('disabled-form').addEventListener('submit', async ev => 
 
     clearLinkResources();
 
+    const user = await getUser();
+
     const data = await fetch(
         `https://${API}/user/${user.id}?q=${encodeURIComponent(
             document.getElementById('signal-search').value
@@ -124,3 +126,5 @@ document.getElementById('disabled-form').addEventListener('submit', async ev => 
         });
     });
 });
+
+fetchProfileData();
