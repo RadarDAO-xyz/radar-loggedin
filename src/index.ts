@@ -26,7 +26,7 @@ const server = app.listen(process.env.PORT, () => {
     console.log(`Listening on port ${(server.address() as AddressInfo).port}`);
 });
 
-process.on('SIGKILL', () => {
+process.on('SIGTERM', () => {
     DBClient.close();
     server.close();
 });
