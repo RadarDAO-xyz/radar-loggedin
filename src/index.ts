@@ -35,7 +35,7 @@ const hostDev = () => {
 
 const hostProd = () => {
     http.createServer((req, res) => {
-        res.writeHead(302, 'Found', { Location: `https://${req.headers.host}${req.url}` });
+        res.writeHead(302, 'Found', { Location: `https://${req.headers.host}${req.url}` }).end();
     }).listen(80);
 
     return https
