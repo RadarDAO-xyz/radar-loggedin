@@ -2,16 +2,18 @@ import './types/global';
 import { config } from 'dotenv';
 config(); // Import .env file into process.env
 import express from 'express';
-import DBClient, { DB } from './util/db';
+import DBClient from './util/db';
 import { AddressInfo } from 'net';
 import UserRouter from './paths/user';
 import path from 'path';
 import https from 'https';
 import http from 'http';
 import fs from 'fs';
+import minify from 'express-minify';
 
 const app = express();
 
+app.use(minify());
 app.use('/static', express.static(path.join(__dirname, '../static')));
 
 app.use('/user', UserRouter);
