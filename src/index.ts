@@ -41,9 +41,9 @@ const hostProd = () => {
     return https
         .createServer(
             {
-                cert: fs.readFileSync('../certificate.crt'),
-                key: fs.readFileSync('../private.key'),
-                ca: [fs.readFileSync('../ca_bundle.crt')]
+                cert: fs.readFileSync(path.join(__dirname, '../certificate.crt')),
+                key: fs.readFileSync(path.join(__dirname, '../private.key')),
+                ca: [fs.readFileSync(path.join(__dirname, '../ca_bundle.crt'))]
             },
             app
         )
