@@ -10,8 +10,11 @@ import https from 'https';
 import http from 'http';
 import fs from 'fs';
 import minify from 'express-minify';
+import cors from 'cors';
 
 const app = express();
+
+app.use(cors())
 
 app.use(minify({
     cache: false, // Caching in memory

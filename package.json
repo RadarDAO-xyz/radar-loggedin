@@ -24,6 +24,8 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
+    "@types/cors": "^2.8.13",
+    "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-minify": "^1.0.0",
