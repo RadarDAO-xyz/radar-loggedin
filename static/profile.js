@@ -1,4 +1,4 @@
-const API = 'api.signals.radardao.xyz';
+const API = 'api.radardao.xyz';
 const DomainREGEX = /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)/i;
 
 function createTop5Div(name, amount) {
