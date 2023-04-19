@@ -1,6 +1,15 @@
 const API = 'api.radardao.xyz';
 const DomainREGEX = /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)/i;
 
+if (getAccessToken() && getExpiresIn() > Date.now()) {
+    const profileName = document.getElementById('profilename');
+    getUser().then(user => {
+        profileName.textContent = user.username;
+    });
+} else {
+    document.location.pathname = 'login-page';
+}
+
 function createTop5Div(name, amount) {
     const div = document.getElementsByClassName('small-copy caps showing-tags')[0].cloneNode();
     div.textContent = `${name} (${amount})`;
