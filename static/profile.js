@@ -53,8 +53,8 @@ function createLinkResource({ tldr, source, curator, smallCopy, url, discordURL,
     // #region expander
     const expanderDiv = document.getElementsByClassName('resource-expand')[0].cloneNode();
     const expandedContent = expanderDiv.lastChild;
-    const smallCopy = expandedContent.firstChild.firstChild;
-    smallCopy.textContent = smallCopy;
+    const smallCopyElm = expandedContent.firstChild.firstChild;
+    smallCopyElm.textContent = smallCopy;
     const tagContainer = document.createElement('div');
     tagContainer.className = 'tag-container-js';
     tags.forEach(tag => {
