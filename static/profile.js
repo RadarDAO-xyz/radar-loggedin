@@ -5,21 +5,179 @@ if (getAccessToken() && getExpiresIn() > Date.now()) {
     const profileName = document.getElementById('profilename');
     getUser().then(user => {
         profileName.textContent = user.username;
+        $('.profile-image')
+            .first()
+            .css(
+                'background-image',
+                `url("https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp?size=1024")`
+            )
+            .css('background-size', 'cover')
+            .css('background-repeat', 'no-repeat');
     });
 } else {
     document.location.pathname = 'login-page';
 }
 
+function insertAfter(referenceNode, newNode) {
+    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+}
+
 function createTop5Div(name, amount) {
     const div = document.getElementsByClassName('small-copy caps showing-tags')[0].cloneNode();
+    div.setAttribute('id', '');
     div.textContent = `${name} (${amount})`;
+    insertAfter(document.getElementsByClassName('most-active-channels-text')[0], div);
 }
 
-function removeFirstTop5() {
-    document.getElementsByClassName('small-copy caps showing-tags')[0].remove();
+function removeOriginalTop5() {
+    document.getElementById('originalTag').remove();
 }
 
-function createLinkResource({ tldr, source, curator, smallCopy, url, discordURL, tags }) {
+function createLinkResource(link) {
+    const resourceBlock = $('.resource-block').first().clone();
+
+    resourceBlock
+        .find('.resource-tldr')
+        .text('')
+        .html(
+            link.data.title ||
+                truncate(link.data.description, 100, true) ||
+                truncate(link.data.url.replace(/^https?:\/\//, '').replace(/^www\./, ''), 44)
+        );
+
+    resourceBlock
+        .find('.resource-source')
+        .text('')
+        .text(
+            link.data.provider?.name ||
+                link.data.url
+                    .replace(/^https?:\/\//, '')
+                    .replace(/^www\./, '')
+                    .split('/')[0]
+        )
+        .click(function () {
+            window.open(link.data.url);
+        })
+        .css('cursor', 'pointer');
+    resourceBlock
+        .find('.resource-curator')
+        .text('')
+        .text(`@${link.message.data.author.username}`)
+        .css('cursor', 'default')
+        .css('margin-bottom', '10px');
+    const posted_at = new Date(link.posted_at).toLocaleString();
+    resourceBlock
+        .find('.resource-curator')
+        .clone()
+        .text(`${posted_at}`)
+        .insertAfter(resourceBlock.find('.resource-curator'));
+    resourceBlock.find('.resource-expanded-content').text('');
+    if (link.data.description) {
+        resourceBlock
+            .find('.resource-expanded-content')
+            .html(`<p class="small-copy">${link.data.description}</p>`)
+            .click(function () {
+                window.open(link.data.url);
+            })
+            .css('cursor', 'pointer');
+    }
+
+    resourceBlock
+        .find('.resource-icon-div .url-icon')
+        .click(function () {
+            window.open(link.data.url);
+        })
+        .css('cursor', 'pointer');
+    resourceBlock
+        .find('.resource-icon-div .discord-icon')
+        .click(function () {
+            window.open(
+                `https://discord.com/channels/${GUILD_ID}/${link.message.data.channel_id}/${link.message.data.id}`
+            );
+        })
+        .css('cursor', 'pointer');
+
+    resourceBlock.find('.content-expander').css({ height: 'auto', opacity: 1 }).hide();
+    resourceBlock
+        .find('.open-arrow')
+        .css('cursor', 'pointer')
+        .click(function () {
+            if (!resourceBlock.find('.content-expander').is(':visible')) {
+                resourceBlock.find('.content-expander').slideDown();
+                resourceBlock.find('.open-arrow').animate(
+                    { rotation: 180 },
+                    {
+                        duration: 500,
+                        step: function (now) {
+                            resourceBlock
+                                .find('.open-arrow')
+                                .css({ transform: 'rotate(' + now + 'deg)' });
+                        }
+                    }
+                );
+            } else {
+                resourceBlock.find('.content-expander').slideUp();
+                resourceBlock.find('.open-arrow').animate(
+                    { rotation: 0 },
+                    {
+                        duration: 500,
+                        step: function (now) {
+                            resourceBlock
+                                .find('.open-arrow')
+                                .css({ transform: 'rotate(' + now + 'deg)' });
+                        }
+                    }
+                );
+            }
+        });
+    resourceBlock
+        .find('.resource-title')
+        .click(function () {
+            resourceBlock.find('.resource-drop').click();
+        })
+        .css('cursor', 'pointer');
+
+    $('<div class="tag-container-js"></div>').insertAfter(
+        resourceBlock.find('.resource-expanded-content')
+    );
+    $(link.tagships).each(function (i, tagship) {
+        const tag = $('<div class="tag-div-button w-button"></div>');
+        tag.text(tagship.tag.name);
+        if (urlParams.getAll('tags[]').includes(tagship.tag.name)) {
+            tag.click(function () {
+                window.location.href = `/?${$.param({
+                    channel: urlParams.get('channel'),
+                    tags: $.grep(urlParams.getAll('tags[]'), function (value) {
+                        return value != tagship.tag.name;
+                    }),
+                    q: urlParams.get('q')
+                })}`;
+            }).css('cursor', 'pointer');
+            tag.addClass('js-selected-tag');
+        } else {
+            tag.click(function () {
+                window.location.href = `/?${$.param({
+                    channel: urlParams.get('channel'),
+                    tags: urlParams.getAll('tags[]').concat([tagship.tag.name]),
+                    q: urlParams.get('q')
+                })}`;
+            }).css('cursor', 'pointer');
+        }
+        tag.appendTo(resourceBlock.find('.tag-container-js')).show();
+    });
+
+    resourceBlock.appendTo($('.resource-stack').first()).show();
+}
+
+function createLinkResourceB({
+    tldr,
+    source = 'Source',
+    curator = 'Curator',
+    smallCopy = '',
+    url = '',
+    discordURL = '',
+    tags = []
+}) {
     const block = document.createElement('div');
     block.className = 'resource-block';
     // #region Icon Div
@@ -81,7 +239,7 @@ function createLinkResource({ tldr, source, curator, smallCopy, url, discordURL,
 
 function noneFoundFill() {
     for (let i = 0; i < 6; i++)
-        createLinkResource({
+        createLinkResourceB({
             tldr: 'No signals Found!',
             source: '',
             curator: 'Curator',
@@ -104,22 +262,23 @@ async function fetchProfileData() {
 
     document.getElementById('signal-counter').textContent = data.total_shared;
 
-    for (let i = 0; i < data.top_five.length; i++) {
+    for (let i = data.top_five?.length - 1 || 0; i >= 0; i--) {
         createTop5Div(data.top_five[i].name, data.top_five[i].count);
     }
-    removeFirstTop5();
+    removeOriginalTop5();
 
     if (data.signals.length > 0) {
         data.signals.forEach(x => {
-            createLinkResource({
-                tldr: x.data.title,
-                source: DomainREGEX.exec(x.data.url)?.values()[1],
-                curator: x.message.data.author.username,
-                smallCopy: x.data.description,
-                url: x.data.url,
-                discordURL: `https://discord.com/channels/913873017287884830/${x.channel_id}/${x.message_id}`,
-                tags: x.tags
-            });
+            createLinkResource(x);
+            // createLinkResource({
+            //     tldr: x.data.title,
+            //     source: DomainREGEX.exec(x.data.url)?.values()[1],
+            //     curator: x.message.data.author.username,
+            //     smallCopy: x.data.description,
+            //     url: x.data.url,
+            //     discordURL: `https://discord.com/channels/913873017287884830/${x.channel_id}/${x.message_id}`,
+            //     tags: x.tags || []
+            // });
         });
     } else {
         noneFoundFill();
@@ -143,15 +302,16 @@ document.getElementById('disabled-form').addEventListener('submit', async ev => 
 
     if (data.signals.length > 0) {
         data.signals.forEach(x => {
-            createLinkResource({
-                tldr: x.data.title,
-                source: DomainREGEX.exec(x.data.url)?.values()[1],
-                curator: x.message.data.author.username,
-                smallCopy: x.data.description,
-                url: x.data.url,
-                discordURL: `https://discord.com/channels/913873017287884830/${x.channel_id}/${x.message_id}`,
-                tags: x.tags
-            });
+            createLinkResource(x);
+            // createLinkResource({
+            //     tldr: x.data.title,
+            //     source: DomainREGEX.exec(x.data.url)?.values()[1],
+            //     curator: x.message.data.author.username,
+            //     smallCopy: x.data.description,
+            //     url: x.data.url,
+            //     discordURL: `https://discord.com/channels/913873017287884830/${x.channel_id}/${x.message_id}`,
+            //     tags: x.tags
+            // });
         });
     } else {
         noneFoundFill();
