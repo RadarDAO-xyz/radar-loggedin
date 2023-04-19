@@ -5,6 +5,8 @@
   "main": "js/index.js",
   "scripts": {
     "test": "jest",
+    "prestart": "npm run build",
+    "start": "pm2 start js/index.js --name=API",
     "start:dev": "ts-node ./src/index.ts",
     "build": "tsc",
     "clean": "tsc --build --clean"
