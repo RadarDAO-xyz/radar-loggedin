@@ -266,20 +266,29 @@ function searchingFill() {
 function discussionFill(discussions) {
     $('.discussions-title').first().text(`SEE DISCUSSIONS (${discussions.length})`);
 
-    discussions.forEach(discussion => {
-        $('.discussion-thread-block').each((i, block) => block.hide());
+    $('.discussion-thread-block').each((i, block) => $(block).hide());
+    if (discussions.length > 0) {
+        discussions.forEach(discussion => {
+            const block = $('.discussion-thread-block').first().clone();
+
+            block
+                .find('.discussion-title')
+                .first()
+                .text(discussion.thread_name)
+                .css('cursor', 'pointer')
+                .click(() => {
+                    document.location = discussion.link;
+                });
+            block.find('.discussion-channel').first().text(discussion.channel_name);
+            block.appendTo($('.discussion-thread-wrapper').first()).show();
+        });
+    } else {
         const block = $('.discussion-thread-block').first().clone();
 
-        block
-            .find('.discussion-title')
-            .first()
-            .text(discussion.thread_name)
-            .css('cursor', 'pointer')
-            .click(() => {
-                document.location = discussion.link;
-            });
-        block.find('.discussion-channel').first().text(discussion.channel_name);
-    });
+        block.find('.discussion-title').first().text('No discussions found!');
+        block.find('.discussion-channel').first().text('');
+        block.appendTo($('.discussion-thread-wrapper').first()).show();
+    }
 }
 
 function clearLinkResources() {
