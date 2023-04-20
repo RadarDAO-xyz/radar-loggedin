@@ -1,10 +1,9 @@
 const API = 'api.radardao.xyz';
 const DomainREGEX = /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)/i;
 
-if (getAccessToken() && getExpiresIn() > Date.now()) {
-    const profileName = document.getElementById('profilename');
+if (isLoggedIn()) {
     getUser().then(user => {
-        profileName.textContent = user.username;
+        $('#profilename').text(user.username);
         $('.profile-image')
             .first()
             .css(
@@ -14,6 +13,10 @@ if (getAccessToken() && getExpiresIn() > Date.now()) {
             .css('background-size', 'cover')
             .css('background-repeat', 'no-repeat');
     });
+    // This func needs to run last (override)
+    setTimeout(() => {
+        $('#logout').show();
+    }, 1000);
 } else {
     document.location.pathname = 'login-page';
 }
