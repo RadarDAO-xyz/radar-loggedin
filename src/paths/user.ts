@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { fetchItAll, fetchTotalShared } from '../util/MongoUtil';
+import { fetchItAll } from '../util/MongoUtil';
 import FrequencyCouter from '../util/FrequencyCounter';
+import { getThreadsForUser, normaliseThreads as normalizeThreads } from '../util/AirtableUtil';
 
 const UserRouter = Router();
 
@@ -28,7 +29,7 @@ UserRouter.use('/:id', async (req, res) => {
 
     const q = req.query.q?.toString() || '';
 
-    const all = await fetchItAll(userId, q, tags);
+    const [all] = await Promise.all([fetchItAll(userId, q, tags)]);
 
     const data: Record<string, any> = {
         signals: all.slice(offset, offset + limit)
@@ -48,6 +49,8 @@ UserRouter.use('/:id', async (req, res) => {
             .sortDesc()
             .slice(0, 5)
             .map(x => ({ id: x[0], name: idToNameMap.get(x[0]), count: x[1] }));
+
+        data.discussions = normalizeThreads(await getThreadsForUser(userId))
     }
 
     SillyCache.set(req.originalUrl, data);

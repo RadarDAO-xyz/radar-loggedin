@@ -263,6 +263,25 @@ function searchingFill() {
         });
 }
 
+function discussionFill(discussions) {
+    $('.discussions-title').first().text(`SEE DISCUSSIONS (${discussions.length})`);
+
+    discussions.forEach(discussion => {
+        $('.discussion-thread-block').each((i, block) => block.hide());
+        const block = $('.discussion-thread-block').first().clone();
+
+        block
+            .find('.discussion-title')
+            .first()
+            .text(discussion.thread_name)
+            .css('cursor', 'pointer')
+            .click(() => {
+                document.location = discussion.link;
+            });
+        block.find('.discussion-channel').first().text(discussion.channel_name);
+    });
+}
+
 function clearLinkResources() {
     const nodes = [...document.getElementById('resource-stack').childNodes.values()];
     nodes.filter(n => n.style.display !== 'none').forEach(node => node.remove());
@@ -280,6 +299,8 @@ async function fetchProfileData() {
         createTop5Div(data.top_five[i].name, data.top_five[i].count);
     }
     removeOriginalTop5();
+
+    discussionFill(data.discussions || []);
 
     clearLinkResources();
     if (data.signals.length > 0) {
