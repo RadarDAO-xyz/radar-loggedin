@@ -24,11 +24,6 @@ if (document.location.hash.length > 0) {
     if (acctok.length > 0 && expin.length > 0) {
         localStorage.setItem(tokenStoreLoc, acctok);
         localStorage.setItem(tokenExpLoc, expin * 1000 + Date.now());
-        const headers = new Headers();
-        headers.set('Authorization', `Bearer ${getAccessToken()}`);
-        fetch('https://dev--signals-radardao--radarxyz.autocode.dev/updateEmail/', {
-            headers
-        });
     }
 }
 
