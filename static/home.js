@@ -10,7 +10,8 @@ if (isLoggedIn()) {
     $('#logout').show();
     $('#w-tabs-0-data-w-tab-1').show();
 } else {
-    $('#profile').hide();
+    $('#profilename').text('Login');
+    $('#profile').show();
     $('#logout').hide();
     $('#w-tabs-0-data-w-tab-1').hide();
 }
