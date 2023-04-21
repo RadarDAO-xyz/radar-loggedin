@@ -13,10 +13,7 @@ if (isLoggedIn()) {
             .css('background-size', 'cover')
             .css('background-repeat', 'no-repeat');
     });
-    // This func needs to run last (override)
-    setTimeout(() => {
-        $('#logout').show();
-    }, 1000);
+    $('#logout').show();
 } else {
     document.location.pathname = 'login-page';
 }
@@ -280,7 +277,7 @@ function discussionFill(discussions) {
                 .text(discussion.thread_name)
                 .css('cursor', 'pointer')
                 .click(() => {
-                    document.location = discussion.link;
+                    window.open(discussion.link);
                 });
             block.find('.discussion-channel').first().text(discussion.channel_name);
             block.appendTo($('.discussion-thread-wrapper').first()).show();
