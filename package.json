@@ -10,8 +10,10 @@
     "start:dev": "ts-node ./src/index.ts",
     "build": "tsc",
     "clean": "tsc --build --clean",
-    "prepare": "husky install",
-    "lint": "eslint . --fix"
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*.{js,ts}": "eslint --fix"
   },
   "author": "mrTomatolegit",
   "license": "MIT",
@@ -24,6 +26,7 @@
     "eslint": "^8.39.0",
     "husky": "^8.0.3",
     "jest": "^29.5.0",
+    "lint-staged": "^13.2.1",
     "node-ts": "^5.1.2",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
