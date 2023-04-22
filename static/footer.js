@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const API = 'https://api.radardao.xyz';
 
 const tokenStoreLoc = 'discord_access_token';
@@ -7,6 +8,7 @@ const getAccessToken = () => localStorage.getItem(tokenStoreLoc);
 const getExpiresAt = () => localStorage.getItem(tokenExpLoc);
 
 let cachedUser = null;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getUser = async (useCache = true) => {
     if (useCache && cachedUser) return cachedUser;
     const headers = new Headers();
@@ -16,7 +18,7 @@ const getUser = async (useCache = true) => {
     }).then(r => r.json());
     return user;
 };
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const isLoggedIn = () => getAccessToken() && getExpiresAt() > Date.now();
 
 if (document.location.hash.length > 0) {
@@ -29,21 +31,21 @@ if (document.location.hash.length > 0) {
     }
 }
 
-const loginButton = document.getElementById(LOGIN_BUTTON_ID);
+const loginButton = document.getElementById('login');
 
 if (loginButton) {
     loginButton.addEventListener('click', ev => {
         ev.preventDefault();
         document.location = `https://discord.com/oauth2/authorize?&client_id=${CLIENT_ID}&response_type=token&scope=identify%20email&redirect_uri=${encodeURIComponent(
-            REDIRECT
+            `${location.protocol}://${location.host}/`
         )}`;
     });
 }
 
-const logoutButton = document.getElementById(LOGOUT_BUTTON_ID);
+const logoutButton = document.getElementById('logout');
 
 if (logoutButton) {
-    logoutButton.addEventListener('click', ev => {
+    logoutButton.addEventListener('click', () => {
         localStorage.removeItem(tokenStoreLoc);
         localStorage.removeItem(tokenExpLoc);
         document.location.hash = '';

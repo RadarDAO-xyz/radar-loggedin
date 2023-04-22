@@ -50,7 +50,7 @@ UserRouter.get('/:id', async (req, res) => {
             .slice(0, 5)
             .map(x => ({ id: x[0], name: idToNameMap.get(x[0]), count: x[1] }));
 
-        data.discussions = normalizeThreads(await getThreadsForUser(userId))
+        data.discussions = normalizeThreads(await getThreadsForUser(userId));
     }
 
     SillyCache.set(req.originalUrl, data);

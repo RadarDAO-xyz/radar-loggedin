@@ -1,11 +1,5 @@
 import { Router } from 'express';
-import { fetchItAll } from '../util/MongoUtil';
-import FrequencyCouter from '../util/FrequencyCounter';
-import {
-    getThreadsForUser,
-    normaliseThreads,
-    normaliseThreads as normalizeThreads
-} from '../util/AirtableUtil';
+import { normaliseThreads } from '../util/AirtableUtil';
 import AirtableBase from '../util/airtable';
 
 const DiscussionRouter = Router();
@@ -29,7 +23,7 @@ DiscussionRouter.get('/', async (req, res) => {
     const q = req.query.q;
     const channelName = req.query.channelId;
 
-    let formulas = [];
+    const formulas = [];
     if (q) {
         formulas.push(`FIND(LOWER('${q}'), LOWER({Thread Name}))`);
     }

@@ -1,4 +1,4 @@
-const DomainREGEX = /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)/i;
+// const DomainREGEX = /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)/i;
 
 if (isLoggedIn()) {
     getUser().then(user => {
@@ -244,7 +244,7 @@ function noneFoundFill() {
             curator: 'Curator',
             smallCopy: 'The search parameters you have provided do not point to any signals!',
             url: '',
-            discordURL: ``,
+            discordURL: '',
             tags: []
         });
 }
@@ -257,7 +257,7 @@ function searchingFill() {
             curator: 'Curator',
             smallCopy: "We're lookin!",
             url: '',
-            discordURL: ``,
+            discordURL: '',
             tags: []
         });
 }

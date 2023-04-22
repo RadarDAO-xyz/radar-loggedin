@@ -16,5 +16,4 @@ export default class FrequencyCouter {
         return [...this.counter.entries()].sort(([, freq], [, freq2]) => freq2 - freq);
     }
 
-
 }
