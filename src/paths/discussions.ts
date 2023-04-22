@@ -25,13 +25,19 @@ DiscussionRouter.get('/', async (req, res) => {
     const q = req.query.q;
     const channelId = req.query.channelId;
 
+    let formulas = [];
+    if (q) {
+        formulas.push(`REGEX_MATCH({Thread Name}, '.*${q}.*')`);
+    }
+    if (channelId) {
+        formulas.push(
+            `{Link} = "https://ptb.discord.com/channels/913873017287884830/${channelId}"`
+        );
+    }
+
     const data = await AirtableBase('Table 1')
         .select({
-            filterByFormula: q ? `OR(REGEX_MATCH({Thread Name}, '.*${q}.*')${
-                channelId
-                    ? `, {Link} = "https://ptb.discord.com/channels/913873017287884830/${channelId}"`
-                    : ''
-            })` : "TRUE()"
+            filterByFormula: formulas.length > 0 ? `AND(${formulas.join(', ')})` : 'TRUE()'
         })
         .firstPage()
         .then(x =>

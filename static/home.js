@@ -27,19 +27,29 @@ async function fillChannelList() {
 }
 
 let waiting = false;
-$('#Search-channels').change(async () => {
+
+$('#Search-channels').keypress(() => {
     if (waiting) return;
     waiting = true;
-    const url = new URL(`https://${API}/discussions`);
-    if ($('#Search-channels').val().length > 0) {
-        url.searchParams.set('q', $('#Search-channels').val());
+    setTimeout(async () => {
+        const url = new URL(`https://${API}/discussions`);
+        if ($('#Search-channels').val().length > 0) {
+            url.searchParams.set('q', $('#Search-channels').val());
+        }
+        if (!isNaN($('#Channels').val())) {
+            url.searchParams.set('channelId', $('#Channels').val());
+        }
+        const data = await fetch(url.toString()).then(r => r.json());
+        console.log(data.map(x => x.name));
+        waiting = false;
+    }, 1000);
+});
+
+$('#Search-channels').keydown(ev => {
+    const key = ev.key;
+    if (key === 'Backspace' || key === 'Delete') {
+        $('#Search-channels').trigger(jQuery.Event('keypress'));
     }
-    if (!isNaN($('#Channels').val())) {
-        url.searchParams.set('channelId', $('#Channels').val());
-    }
-    const data = await fetch(url.toString()).then(r => r.json());
-    console.log(data.map(x => x.name));
-    waiting = false;
 });
 
 fillChannelList();
