@@ -299,7 +299,7 @@ async function fetchProfileData() {
     searchingFill();
     const user = await getUser();
     document.getElementById('profilename').textContent = user.username;
-    const data = await fetch(`https://${API}/user/${user.id}`).then(r => r.json());
+    const data = await fetch(`${API}/user/${user.id}`).then(r => r.json());
 
     document.getElementById('signal-counter').textContent = data.total_shared;
 
@@ -331,7 +331,7 @@ document.getElementById('disabled-form').addEventListener('submit', async ev => 
     const user = await getUser();
 
     const data = await fetch(
-        `https://${API}/user/${user.id}?q=${encodeURIComponent(
+        `${API}/user/${user.id}?q=${encodeURIComponent(
             document.getElementById('signal-search').value
         )}`
     ).then(r => r.json());

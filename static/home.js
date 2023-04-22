@@ -17,39 +17,46 @@ if (isLoggedIn()) {
 }
 
 async function fillChannelList() {
-    const data = await fetch(`https://${API}/channels/`).then(r => r.json());
+    const data = await fetch(`${API}/channels/`).then(r => r.json());
 
     $('#Channels').empty();
-    $('#Channels').append($(`<option>ALL CHANNELS</option>`));
+    $('#Channels').append($(`<option value="not">ALL CHANNELS</option>`));
     data.forEach(channel => {
-        $('#Channels').append($(`<option value="${channel.id}" >${channel.name}</option>`));
+        $('#Channels').append($(`<option value="${channel.name}" >${channel.name}</option>`));
     });
+}
+fillChannelList();
+
+async function fetchDiscussions(q, channel) {
+    const url = new URL(`${API}/discussions`);
+    if ($('#Search-channels').val().length > 0) {
+        url.searchParams.set('q', q);
+    }
+    if ($('#Channels').val() !== 'not') {
+        url.searchParams.set('channelId', channel);
+    }
+    console.log(url.toString());
+    const data = await fetch(url.toString()).then(r => r.json());
+    console.log(data);
+    return data;
 }
 
 let waiting = false;
-
-$('#Search-channels').keypress(() => {
+let lastSearched = '';
+function runIfSafe() {
     if (waiting) return;
     waiting = true;
     setTimeout(async () => {
-        const url = new URL(`https://${API}/discussions`);
-        if ($('#Search-channels').val().length > 0) {
-            url.searchParams.set('q', $('#Search-channels').val());
-        }
-        if (!isNaN($('#Channels').val())) {
-            url.searchParams.set('channelId', $('#Channels').val());
-        }
-        const data = await fetch(url.toString()).then(r => r.json());
-        console.log(data.map(x => x.name));
+        lastSearched = $('#Search-channels').val() + $('#Channels').val();
+        await fetchDiscussions($('#Search-channels').val(), $('#Channels').val());
         waiting = false;
+        if (lastSearched !== $('#Search-channels').val() + $('#Channels').val()) {
+            runIfSafe();
+        }
     }, 1000);
-});
-
+}
+$('#Search-channels').keypress(() => runIfSafe());
 $('#Search-channels').keydown(ev => {
-    const key = ev.key;
-    if (key === 'Backspace' || key === 'Delete') {
-        $('#Search-channels').trigger(jQuery.Event('keypress'));
-    }
+    if (ev.key === 'Backspace' || ev.key === 'Delete') runIfSafe();
 });
-
-fillChannelList();
+$('#Channels').change(() => runIfSafe());
