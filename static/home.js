@@ -20,9 +20,12 @@ async function fillChannelList() {
     const data = await fetch(`${API}/channels/`).then(r => r.json());
 
     $('#Channels').empty();
+    $('#Create-post-in-channel').empty();
     $('#Channels').append($(`<option value="not">ALL CHANNELS</option>`));
+    $('#Create-post-in-channel').append($(`<option value="not">ALL CHANNELS</option>`));
     data.forEach(channel => {
-        $('#Channels').append($(`<option value="${channel.name}" >${channel.name}</option>`));
+        $('#Channels').append($(`<option value="${channel.name}" >#${channel.name}</option>`));
+        $('#Create-post-in-channel').append($(`<option value="${channel.name}" >#${channel.name}</option>`));
     });
 }
 fillChannelList();
