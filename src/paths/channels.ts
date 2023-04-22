@@ -13,7 +13,7 @@ ChannelRouter.get('/', async (req, res) => {
     console.log('Fetching postable channels');
 
     if (SillyCache.has(req.originalUrl)) {
-        console.log('Serving cached data');
+        console.log("Serving cached data");
         return res.status(200).json(SillyCache.get(req.originalUrl)).end();
     }
 
