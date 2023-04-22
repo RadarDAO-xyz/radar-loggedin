@@ -11,18 +11,22 @@ import http from 'http';
 import fs from 'fs';
 import minify from 'express-minify';
 import cors from 'cors';
+import ChannelRouter from './paths/channels';
 
 const app = express();
 
-app.use(cors())
+app.use(cors());
 
-app.use(minify({
-    cache: false, // Caching in memory
-    js_match: /.+\.js/
-}));
+app.use(
+    minify({
+        cache: false, // Caching in memory
+        js_match: /.+\.js/
+    })
+);
 app.use('/static', express.static(path.join(__dirname, '../static')));
 
 app.use('/user', UserRouter);
+app.use('/channels', ChannelRouter);
 
 app.use((req, res) => {
     res.status(404).end('Not Found');

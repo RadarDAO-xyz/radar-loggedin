@@ -1,3 +1,5 @@
+const API = 'api.radardao.xyz';
+
 const tokenStoreLoc = 'discord_access_token';
 const tokenExpLoc = 'discord_expires_in';
 
@@ -9,9 +11,14 @@ const getUser = async (useCache = true) => {
     if (useCache && cachedUser) return cachedUser;
     const headers = new Headers();
     headers.set('Authorization', `Bearer ${getAccessToken()}`);
-    const user = await fetch('https://discord.com/api/users/@me', {
-        headers
-    }).then(r => r.json());
+    const user = {
+        id: '832223697694621777',
+        username: 'keels223',
+        avatar: 'db10bf458a9b2a089dc3a8758c0d5fd1'
+    };
+    // const user = await fetch('https://discord.com/api/users/@me', {
+    //     headers
+    // }).then(r => r.json());
     return user;
 };
 

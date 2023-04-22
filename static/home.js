@@ -15,3 +15,14 @@ if (isLoggedIn()) {
     $('#logout').hide();
     $('#w-tabs-0-data-w-tab-1').hide();
 }
+
+async function fillChannelList() {
+    const data = await fetch(`https://${API}/channels/`).then(r => r.json());
+
+    $('#Channels').empty();
+    data.forEach(channel => {
+        $('#Channels').append($(`<option value="${channel.id}" >${channel.name}</option>`));
+    });
+}
+
+fillChannelList();

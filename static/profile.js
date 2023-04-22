@@ -1,4 +1,3 @@
-const API = 'api.radardao.xyz';
 const DomainREGEX = /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)/i;
 
 if (isLoggedIn()) {

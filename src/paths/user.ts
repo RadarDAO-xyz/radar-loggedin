@@ -11,7 +11,7 @@ setInterval(() => {
     SillyCache.clear();
 }, 120_000); // 2 minutes
 
-UserRouter.use('/:id', async (req, res) => {
+UserRouter.get('/:id', async (req, res) => {
     const userId = req.params.id;
     console.log('Fetching profile for user ' + userId);
 
