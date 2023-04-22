@@ -44,7 +44,8 @@ DiscussionRouter.get('/', async (req, res) => {
             filterByFormula: formulas.length > 0 ? `AND(${formulas.join(', ')})` : 'TRUE()'
         })
         .firstPage()
-        .then(x => normaliseThreads(x));
+        .then(x => normaliseThreads(x))
+        .then(x => x.slice(0, 25));
 
     SillyCache.set(req.originalUrl, data);
 
