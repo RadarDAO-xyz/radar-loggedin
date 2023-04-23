@@ -7,17 +7,20 @@ const tokenExpLoc = 'discord_expires_in';
 const getAccessToken = () => localStorage.getItem(tokenStoreLoc);
 const getExpiresAt = () => localStorage.getItem(tokenExpLoc);
 
-let cachedUser = null;
+let cachedUser = null; // This becomes a promise
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getUser = async (useCache = true) => {
     if (useCache && cachedUser) return cachedUser;
     const headers = new Headers();
     headers.set('Authorization', `Bearer ${getAccessToken()}`);
-    const user = await fetch('https://discord.com/api/users/@me', {
+    const user = fetch('https://discord.com/api/users/@me', {
         headers
     }).then(r => r.json());
+    cachedUser = user;
     return user;
 };
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const isLoggedIn = () => getAccessToken() && getExpiresAt() > Date.now();
 
