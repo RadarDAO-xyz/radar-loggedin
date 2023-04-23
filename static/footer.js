@@ -28,15 +28,15 @@ if (document.location.hash.length > 0) {
     if (acctok.length > 0 && expin.length > 0) {
         localStorage.setItem(tokenStoreLoc, acctok);
         localStorage.setItem(tokenExpLoc, expin * 1000 + Date.now());
-        checkRadarMember();
     }
 }
 
 async function checkRadarMember() {
     if (isLoggedIn()) {
-        const { is_member } = fetch(`${API}/isMember/${await getUser().then(u => u.id)}`).then(r =>
-            r.json()
-        );
+        console.log('a', await getUser().then(u => u.id));
+        const { is_member } = await fetch(
+            `${API}/isMember/${await getUser().then(u => u.id)}`
+        ).then(r => r.json());
         if (!is_member) logout();
     }
 }
