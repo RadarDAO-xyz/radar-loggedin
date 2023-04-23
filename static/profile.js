@@ -1,6 +1,5 @@
-// const DomainREGEX = /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)/i;
-
 if (isLoggedIn()) {
+    // Sets profile text and avatar if logged in
     getUser().then(user => {
         $('#profilename').text(user.username);
         $('.profile-image')
@@ -14,13 +13,20 @@ if (isLoggedIn()) {
     });
     $('#logout').show();
 } else {
+    // Redirects user to login page if not logged in
     document.location.pathname = 'login-page';
 }
 
+/**
+ * Pre-jQuery function, inserts before the reference node
+ */
 function insertAfter(referenceNode, newNode) {
     referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 }
 
+/**
+ * Creates a top 5 div in based off of the one preexisting
+ */
 function createTop5Div(name, amount) {
     const div = document.getElementsByClassName('small-copy caps showing-tags')[0].cloneNode();
     div.setAttribute('id', '');
@@ -28,10 +34,16 @@ function createTop5Div(name, amount) {
     insertAfter(document.getElementsByClassName('most-active-channels-text')[0], div);
 }
 
+/**
+ * Deletes the original top 5 channel already appearing in webflow
+ */
 function removeOriginalTop5() {
     document.getElementById('originalTag').remove();
 }
 
+/**
+ * Creates a full link resource in the profile's right page
+ */
 function createLinkResource(link) {
     const resourceBlock = $('.resource-block').first().clone();
 
@@ -168,6 +180,10 @@ function createLinkResource(link) {
     resourceBlock.appendTo($('.resource-stack').first()).show();
 }
 
+/**
+ * This thing is trash, but it's kept out of lazyness to make a new one
+ * Creates a new bad link resource in the profile's right page
+ */
 function createLinkResourceB({
     tldr,
     source = 'Source',
@@ -236,6 +252,9 @@ function createLinkResourceB({
     document.getElementById('resource-stack').appendChild(block);
 }
 
+/**
+ * Fills the profile right page with `No signals Found!` text
+ */
 function noneFoundFill() {
     for (let i = 0; i < 6; i++)
         createLinkResourceB({
@@ -249,6 +268,9 @@ function noneFoundFill() {
         });
 }
 
+/**
+ * Fills the profile right page with `Searching for your signals...` text
+ */
 function searchingFill() {
     for (let i = 0; i < 6; i++)
         createLinkResourceB({
@@ -262,6 +284,9 @@ function searchingFill() {
         });
 }
 
+/**
+ * Adds the discussions fetched into the page
+ */
 function discussionFill(discussions) {
     $('.discussions-title').first().text(`SEE DISCUSSIONS (${discussions.length})`);
 
@@ -290,11 +315,17 @@ function discussionFill(discussions) {
     }
 }
 
+/**
+ * Clears links from the right side page
+ */
 function clearLinkResources() {
     const nodes = [...document.getElementById('resource-stack').childNodes.values()];
     nodes.filter(n => n.style.display !== 'none').forEach(node => node.remove());
 }
 
+/**
+ * Fetches user profile data from the api
+ */
 async function fetchProfileData() {
     searchingFill();
     const user = await getUser();
@@ -320,9 +351,7 @@ async function fetchProfileData() {
     }
 }
 
-// Disable form submission
 document.getElementById('disabled-form').addEventListener('submit', async ev => {
-    console.log('a');
     ev.preventDefault();
 
     clearLinkResources();

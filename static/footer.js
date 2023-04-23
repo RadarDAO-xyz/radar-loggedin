@@ -24,6 +24,9 @@ const getUser = async (useCache = true) => {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const isLoggedIn = () => getAccessToken() && getExpiresAt() > Date.now();
 
+/**
+ * Checks if login credentials are available in the URL
+ */
 if (document.location.hash.length > 0) {
     const urlparams = new URLSearchParams(document.location.hash.substring(1));
     const acctok = urlparams.get('access_token');
@@ -34,6 +37,9 @@ if (document.location.hash.length > 0) {
     }
 }
 
+/**
+ * Checks if logged in member is in RADAR server
+ */
 async function checkRadarMember() {
     if (isLoggedIn()) {
         const { is_member } = await fetch(
@@ -48,7 +54,7 @@ const loginButton = document.getElementById('login');
 if (loginButton) {
     loginButton.addEventListener('click', ev => {
         ev.preventDefault();
-        document.location = `https://discord.com/oauth2/authorize?&client_id=${CLIENT_ID}&response_type=token&scope=identify%20email&redirect_uri=${`${location.protocol}//${location.host}/`}`;
+        document.location = `https://discord.com/oauth2/authorize?&client_id=${CLIENT_ID}&response_type=token&scope=identify%20email&redirect_uri=${location.protocol}//${location.host}/`;
     });
 }
 
@@ -61,10 +67,6 @@ async function logout() {
     document.location.reload();
 }
 
-if (logoutButton) {
-    logoutButton.addEventListener('click', () => {
-        logout();
-    });
-}
+if (logoutButton) logoutButton.addEventListener('click', logout);
 
 checkRadarMember();

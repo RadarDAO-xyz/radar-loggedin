@@ -1,3 +1,9 @@
+/**
+ * Checks if the user is logged in
+ * Hides some elements if not logged in
+ * Shows some elements if logged in
+ * Sets the username on the profile button if logged in
+ */
 if (isLoggedIn()) {
     $('#profile').click(ev => {
         ev.preventDefault();
@@ -17,6 +23,9 @@ if (isLoggedIn()) {
     setTimeout(() => $('#w-tabs-0-data-w-tab-0').hide(), 100);
 }
 
+/**
+ * Fetches and fills the channel selects in the share popup
+ */
 async function fillChannelList() {
     const data = await fetch(`${API}/channels/`).then(r => r.json());
 
@@ -33,8 +42,11 @@ async function fillChannelList() {
         );
     });
 }
-fillChannelList();
+fillChannelList(); // Run immediately
 
+/**
+ * Fetches the existing discussions from the API (share popup)
+ */
 async function fetchDiscussions(q, channel) {
     const url = new URL(`${API}/discussions`);
     if ($('#Search-channels').val().length > 0) {
@@ -43,15 +55,21 @@ async function fetchDiscussions(q, channel) {
     if ($('#Channels').val() !== 'not') {
         url.searchParams.set('channelId', channel);
     }
-    console.log(url.toString());
     const data = await fetch(url.toString()).then(r => r.json());
-    console.log(data);
     return data;
 }
 
+/**
+ * This box will display the discussions fetched from `fetchDiscussions`
+ */
 const foundBox = $('<div id="found-box" class="found-box"></div>').hide();
 $('.find-related-discord-discussion-block').first().append(foundBox);
 
+/**
+ * Only runs every second, to avoid overcalled the api
+ * Runs again if input has changed while api was being called
+ * to avoid showing outdated results
+ */
 let waiting = false;
 let lastSearched = '';
 function runIfSafe() {
@@ -71,6 +89,9 @@ function runIfSafe() {
     }, 1000);
 }
 
+/**
+ * This populates the `#found-box` with the discussions fetched from `fetchDiscussions`
+ */
 function populateChannelBox(discussions) {
     $('#found-box').show().empty();
     discussions.forEach(discussion => {
@@ -84,12 +105,19 @@ function populateChannelBox(discussions) {
     });
 }
 
+/**
+ * Update the results live by tracking changes in form
+ */
 $('#Search-channels').keypress(() => runIfSafe());
 $('#Search-channels').keydown(ev => {
     if (ev.key === 'Backspace' || ev.key === 'Delete') runIfSafe();
 });
 $('#Channels').change(() => runIfSafe());
 
+/**
+ * This part clears the potention error message on the #submit-signal button
+ * by tracking any changes in the form
+ */
 function inputUpdated() {
     if (!submitting) $('#submit-signal').text('Submit Signal!');
 }
@@ -101,6 +129,9 @@ $('#Search-channels').keydown(inputUpdated);
 $('#Create-post-in-channel').change(inputUpdated);
 $('#Discussion-title').keydown(inputUpdated);
 
+/**
+ * This part of the script handles signal submission
+ */
 let newpost = false;
 $('.underline.signal-submit')
     .first()
@@ -108,7 +139,7 @@ $('.underline.signal-submit')
         newpost = true;
     });
 
-let submitting = false;
+let submitting = false; // You can only submit once
 $('#submit-signal').click(async () => {
     if (!isLoggedIn()) return;
     if (submitting) return;
@@ -121,6 +152,7 @@ $('#submit-signal').click(async () => {
         .map(x => x.trim())
         .filter(x => x);
 
+    // Checks for any missing inputs and updates the button with the error
     if (!submittedUrl) {
         return $('#submit-signal').text('URL IS MISSING');
     } else if (!submittedDescription) {
@@ -128,7 +160,6 @@ $('#submit-signal').click(async () => {
     } else if (keywords.length == 0) {
         return $('#submit-signal').text('KEYWORDS ARE MISSING');
     }
-
     if (newpost) {
         if (!$('#Discussion-title').val()) {
             return $('#submit-signal').text('TITLE IS MISSING');
@@ -174,5 +205,4 @@ $('#submit-signal').click(async () => {
     } else {
         $('#submit-signal').text('Error while submitting...');
     }
-    console.log(message);
 });
