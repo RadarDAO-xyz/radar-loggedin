@@ -33,7 +33,6 @@ if (document.location.hash.length > 0) {
 
 async function checkRadarMember() {
     if (isLoggedIn()) {
-        console.log('a', await getUser().then(u => u.id));
         const { is_member } = await fetch(
             `${API}/isMember/${await getUser().then(u => u.id)}`
         ).then(r => r.json());
