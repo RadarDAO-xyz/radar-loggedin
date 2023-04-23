@@ -1,6 +1,10 @@
-import { Router } from 'express';
+import { Router, json } from 'express';
 import { normaliseThreads } from '../util/AirtableUtil';
 import AirtableBase from '../util/airtable';
+import DiscordClient from '../util/discord';
+import { ForumChannel, ThreadChannel, Webhook } from 'discord.js';
+import fetch from 'node-fetch';
+import { RawUserData } from 'discord.js/typings/rawDataTypes';
 
 const DiscussionRouter = Router();
 
@@ -21,14 +25,14 @@ DiscussionRouter.get('/', async (req, res) => {
     console.log('Querying data from Airtable');
 
     const q = req.query.q;
-    const channelName = req.query.channelId;
+    const channelId = req.query.channelId;
 
     const formulas = [];
     if (q) {
         formulas.push(`FIND(LOWER('${q}'), LOWER({Thread Name}))`);
     }
-    if (channelName) {
-        formulas.push(`{Signal Channel} = '${channelName}'`);
+    if (channelId) {
+        formulas.push(`{channelId} = '${channelId}'`);
     }
 
     console.log(formulas.length > 0 ? `AND(${formulas.join(', ')})` : 'TRUE()');
@@ -45,6 +49,80 @@ DiscussionRouter.get('/', async (req, res) => {
 
     console.log('Serving queried data');
     res.status(200).json(data).end();
+});
+
+DiscussionRouter.use(json());
+
+declare module 'express-serve-static-core' {
+    export interface Request {
+        user?: RawUserData;
+        webhook?: Webhook;
+    }
+}
+
+DiscussionRouter.use('/:forumId', async (req, res, next) => {
+    if (!req.headers.authorization) return res.status(400).end();
+    const headers = new Headers();
+    headers.set('Authorization', req.headers.authorization as string);
+    const user = (await fetch('https://discord.com/api/v9/users/@me', {
+        headers
+    }).then(res => res.json())) as RawUserData;
+    if (!user || !user.id) return res.status(401).end();
+
+    const member = await DiscordClient.guilds.cache
+        .get('913873017287884830')
+        ?.members.fetch(user.id);
+
+    if (!member) return res.status(403).end();
+
+    const forumChannel = (await DiscordClient.channels.fetch(req.params.forumId)) as ForumChannel;
+
+    let webhook = await forumChannel
+        .fetchWebhooks()
+        .then(ws => ws.filter(w => w.owner?.id === DiscordClient.user?.id).first());
+
+    if (!webhook) {
+        webhook = await forumChannel.createWebhook({
+            name: 'PosterHook'
+        });
+    }
+
+    req.user = user;
+    req.webhook = webhook;
+    next();
+});
+
+DiscussionRouter.post('/:forumId/:threadId', async (req, res) => {
+    const threadChannel = (await DiscordClient.channels.fetch(
+        req.params.threadId
+    )) as ThreadChannel;
+    const webhook = req.webhook as Webhook;
+    const user = req.user as RawUserData;
+    const message = await webhook.send({
+        content: `${req.body.url}\n\n${req.body.reason}\n\n${(req.body.keywords as string[])
+            .map(x => `\`${x}\``)
+            .join(' ')}`,
+        username: user.username,
+        avatarURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`,
+        threadId: threadChannel.id
+    });
+
+    res.status(200).json(message.toJSON()).end();
+});
+
+DiscussionRouter.post('/:forumId', async (req, res) => {
+    const webhook = req.webhook as Webhook;
+    const user = req.user as RawUserData;
+    const message = await webhook.send({
+        content: `${req.body.url}\n\n${req.body.reason}\n\n${(req.body.keywords as string[])
+            .map(x => `\`${x}\``)
+            .join(' ')}`,
+        username: user.username,
+        avatarURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`,
+        threadName: req.body.title
+    });
+
+    res.status(200).json(message.toJSON()).end();
 });
 
 export default DiscussionRouter;

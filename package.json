@@ -35,9 +35,11 @@
     "@types/cors": "^2.8.13",
     "airtable": "^0.11.6",
     "cors": "^2.8.5",
+    "discord.js": "^14.9.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-minify": "^1.0.0",
-    "mongodb": "^5.2.0"
+    "mongodb": "^5.2.0",
+    "node-fetch": "^3.3.1"
   }
 }

@@ -24,8 +24,8 @@ async function fillChannelList() {
     $('#Channels').append($('<option value="not">ALL CHANNELS</option>'));
     $('#Create-post-in-channel').append($('<option value="not">ALL CHANNELS</option>'));
     data.forEach(channel => {
-        $('#Channels').append($(`<option value="${channel.name}" >#${channel.name}</option>`));
-        $('#Create-post-in-channel').append($(`<option value="${channel.name}" >#${channel.name}</option>`));
+        $('#Channels').append($(`<option value="${channel.id}" >#${channel.name}</option>`));
+        $('#Create-post-in-channel').append($(`<option value="${channel.id}" >#${channel.name}</option>`));
     });
 }
 fillChannelList();
