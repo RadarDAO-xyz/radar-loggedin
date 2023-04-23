@@ -1,5 +1,5 @@
 import { Router, json } from 'express';
-import { normaliseThreads } from '../util/AirtableUtil';
+import { insertThread, normaliseThreads } from '../util/AirtableUtil';
 import AirtableBase from '../util/airtable';
 import DiscordClient from '../util/discord';
 import { ForumChannel, ThreadChannel, Webhook } from 'discord.js';
@@ -55,6 +55,7 @@ DiscussionRouter.use(json());
 
 declare module 'express-serve-static-core' {
     export interface Request {
+        forum?: ForumChannel;
         user?: RawUserData;
         webhook?: Webhook;
     }
@@ -62,6 +63,11 @@ declare module 'express-serve-static-core' {
 
 DiscussionRouter.use('/:forumId', async (req, res, next) => {
     if (!req.headers.authorization) return res.status(400).end();
+
+    if (!req.body.url || !req.body.reason || !req.body.keywords || req.body.keywords.length == 0) {
+        return res.sendStatus(401).end();
+    }
+
     const headers = new Headers();
     headers.set('Authorization', req.headers.authorization as string);
     const user = (await fetch('https://discord.com/api/v9/users/@me', {
@@ -87,6 +93,7 @@ DiscussionRouter.use('/:forumId', async (req, res, next) => {
         });
     }
 
+    req.forum = forumChannel;
     req.user = user;
     req.webhook = webhook;
     next();
@@ -111,6 +118,9 @@ DiscussionRouter.post('/:forumId/:threadId', async (req, res) => {
 });
 
 DiscussionRouter.post('/:forumId', async (req, res) => {
+    if (!req.body.title) {
+        res.sendStatus(401).end();
+    }
     const webhook = req.webhook as Webhook;
     const user = req.user as RawUserData;
     const message = await webhook.send({
@@ -121,6 +131,13 @@ DiscussionRouter.post('/:forumId', async (req, res) => {
         avatarURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`,
         threadName: req.body.title
     });
+
+    await insertThread(
+        message.channel as ThreadChannel,
+        req.forum as ForumChannel,
+        req.body.keywords as string[],
+        user
+    );
 
     res.status(200).json(message.toJSON()).end();
 });
