@@ -47,6 +47,6 @@ export function normaliseThreads(results: Records<FieldSet>) {
         timestamp: r.fields['Timestamp'],
         curator_id: r.fields['curatorId'],
         channel_id: r.fields['channelId'],
-        threadId: r.fields['threadId']
+        thread_id: r.fields['threadId']
     }));
 }
