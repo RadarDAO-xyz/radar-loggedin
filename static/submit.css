@@ -14,10 +14,10 @@
     margin: 5px;
 }
 
-.found-box-channel .selected {
-    background-color: #a1a1a1;
+.found-box-channel.selected {
+    background-color: #d5d5d5;
 }
 
 .found-box-channel:hover {
-    background-color: #a1a1a1;
+    background-color: #d5d5d5;
 }
