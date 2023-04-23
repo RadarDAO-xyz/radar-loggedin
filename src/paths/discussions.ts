@@ -65,7 +65,7 @@ DiscussionRouter.use('/:forumId', async (req, res, next) => {
     if (!req.headers.authorization) return res.status(400).end();
 
     if (!req.body.url || !req.body.reason || !req.body.keywords || req.body.keywords.length == 0) {
-        return res.sendStatus(401).end();
+        return res.sendStatus(400).end();
     }
 
     const headers = new Headers();
@@ -100,6 +100,7 @@ DiscussionRouter.use('/:forumId', async (req, res, next) => {
 });
 
 DiscussionRouter.post('/:forumId/:threadId', async (req, res) => {
+    console.log('b', req.params);
     const threadChannel = (await DiscordClient.channels.fetch(
         req.params.threadId
     )) as ThreadChannel;
@@ -119,7 +120,7 @@ DiscussionRouter.post('/:forumId/:threadId', async (req, res) => {
 
 DiscussionRouter.post('/:forumId', async (req, res) => {
     if (!req.body.title) {
-        res.sendStatus(401).end();
+        res.sendStatus(400).end();
     }
     const webhook = req.webhook as Webhook;
     const user = req.user as RawUserData;
