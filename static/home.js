@@ -90,17 +90,66 @@ $('#Search-channels').keydown(ev => {
 });
 $('#Channels').change(() => runIfSafe());
 
+function inputUpdated() {
+    if (!submitting) $('#submit-signal').text('Submit Signal!');
+}
+$('#submit-url').keydown(inputUpdated);
+$('#submit-description').keydown(inputUpdated);
+$('#submit-tags').keydown(inputUpdated);
+$('#Channels').change(inputUpdated);
+$('#Search-channels').keydown(inputUpdated);
+$('#Create-post-in-channel').change(inputUpdated);
+$('#Discussion-title').keydown(inputUpdated);
+
+let newpost = false;
+$('.underline.signal-submit')
+    .first()
+    .click(() => {
+        newpost = true;
+    });
+
 let submitting = false;
 $('#submit-signal').click(async () => {
     if (!isLoggedIn()) return;
     if (submitting) return;
+
+    const submittedUrl = $('#submit-url').val();
+    const submittedDescription = $('#submit-description').val();
+    const keywords = $('#submit-tags')
+        .val()
+        .split(',')
+        .map(x => x.trim())
+        .filter(x => x);
+
+    if (!submittedUrl) {
+        return $('#submit-signal').text('URL IS MISSING');
+    } else if (!submittedDescription) {
+        return $('#submit-signal').text('WHY IS MISSING');
+    } else if (keywords.length == 0) {
+        return $('#submit-signal').text('KEYWORDS ARE MISSING');
+    }
+
+    if (newpost) {
+        if (!$('#Discussion-title').val()) {
+            return $('#submit-signal').text('TITLE IS MISSING');
+        } else if ($('#Create-post-in-channel').val() === 'not') {
+            return $('#submit-signal').text('CHANNEL NOT SELECTED');
+        }
+    } else {
+        // EXISTING
+        if ($('.found-box-channel.selected').length == 0) {
+            return $('#submit-signal').text('DISCUSSION NOT SELECTED');
+        }
+    }
+
     submitting = true;
     $('#submit-signal').text('Submitting signal...');
+
     let url;
-    if ($('#Discussion-title').val() && $('#Create-post-in-channel').val() !== 'not') {
+    if (newpost) {
         url = new URL(`${API}/discussions/${$('#Create-post-in-channel').val()}`);
     } else {
-        // Existing
+        // EXISTING
         url = new URL(
             `${API}/discussions/${$('.found-box-channel.selected').attr('forum')}/${$(
                 '.found-box-channel.selected'
@@ -114,14 +163,9 @@ $('#submit-signal').click(async () => {
         headers,
         method: 'POST',
         body: JSON.stringify({
-            url: $('#submit-url').first().val(),
-            reason: $('#submit-description').first().val(),
-            keywords: $('#submit-tags')
-                .first()
-                .val()
-                .split(',')
-                .map(x => x.trim())
-                .filter(x => x),
+            url: submittedUrl,
+            reason: submittedDescription,
+            keywords: keywords,
             title: $('#Discussion-title').val() || undefined
         })
     }).then(r => r.json());
