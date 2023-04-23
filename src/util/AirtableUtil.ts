@@ -45,6 +45,8 @@ export function normaliseThreads(results: Records<FieldSet>) {
         link: r.fields['Link'],
         comments: r.fields['Comments'],
         timestamp: r.fields['Timestamp'],
-        curator_id: r.fields['curatorId']
+        curator_id: r.fields['curatorId'],
+        channel_id: r.fields['channelId'],
+        threadId: r.fields['threadId']
     }));
 }
