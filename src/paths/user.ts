@@ -16,11 +16,11 @@ UserRouter.get('/:id', async (req, res) => {
     console.log('Fetching profile for user ' + userId);
 
     if (SillyCache.has(req.originalUrl)) {
-        console.log('Serving cached data');
+        console.log('Serving cached profile data');
         return res.status(200).json(SillyCache.get(req.originalUrl)).end();
     }
 
-    console.log('Querying data from DB');
+    console.log('Querying profile data from DB');
 
     const offset = parseInt(`${req.query.offset}`) || 0;
     const limit = parseInt(`${req.query.limit}`) || 50;
@@ -55,7 +55,7 @@ UserRouter.get('/:id', async (req, res) => {
 
     SillyCache.set(req.originalUrl, data);
 
-    console.log('Serving queried data');
+    console.log('Serving queried profile data');
     res.status(200).json(data).end();
 });
 

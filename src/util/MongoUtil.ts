@@ -1,9 +1,8 @@
 import { DB } from './db';
 
-export async function fetchTotalShared(userId: string) {
-    return await DB.collection('messages').countDocuments({ 'data.author.id': userId });
-}
-
+/**
+ * Profile fetcher (fetches everything)
+ */
 export async function fetchItAll(userId: string, q = '', tags: string[] = []) {
     const matchStage: Record<string, any> = {
         'messages.data.author.id': userId,

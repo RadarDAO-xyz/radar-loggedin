@@ -1,16 +1,26 @@
 import './types/global';
 import { config } from 'dotenv';
 config(); // Import .env file into process.env
+
+// HTTP(S) handlers
 import express from 'express';
-import DBClient from './util/db';
-import { AddressInfo } from 'net';
-import UserRouter from './paths/user';
-import path from 'path';
 import https from 'https';
 import http from 'http';
+import { AddressInfo } from 'net';
+
+// FS
 import fs from 'fs';
+import path from 'path';
+
+// MongoDB
+import DBClient from './util/db';
+
+// Express Middleware
 import minify from 'express-minify';
 import cors from 'cors';
+
+// Express Routers
+import UserRouter from './paths/user';
 import ChannelRouter from './paths/channels';
 import DiscussionRouter from './paths/discussions';
 import isMemberRouter from './paths/isMember';

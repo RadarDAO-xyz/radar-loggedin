@@ -6,7 +6,7 @@ This is an api for the [signals.radardao.xyz](https://www.alphatest.signals.rada
 
 To start a dev instance, `npm run start:dev`
 
-To start a prod instance, `npm run start`. Make sure to have pm2 installed globally
+To start a prod instance, `npm run start`. **Make sure to have pm2 installed globally**
 
 ## Contribution
 

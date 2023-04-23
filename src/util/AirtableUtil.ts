@@ -4,6 +4,9 @@ import { FieldSet } from 'airtable/lib/field_set';
 import { ForumChannel, SnowflakeUtil, ThreadChannel, User } from 'discord.js';
 import { RawUserData } from 'discord.js/typings/rawDataTypes';
 
+/**
+ * Fetches all discussions for a curator
+ */
 export async function getThreadsForUser(curatorId: string) {
     return AirtableBase('Table 1')
         .select({
@@ -13,6 +16,9 @@ export async function getThreadsForUser(curatorId: string) {
         .all();
 }
 
+/**
+ * Inserts a dscussion entry into the airtable
+ */
 export async function insertThread(
     thread: ThreadChannel,
     channel: ForumChannel,
@@ -35,6 +41,9 @@ export async function insertThread(
     );
 }
 
+/**
+ * Turns the airtable result into usable json
+ */
 export function normaliseThreads(results: Records<FieldSet>) {
     return results.map(r => ({
         _id: r.id,

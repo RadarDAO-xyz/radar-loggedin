@@ -13,11 +13,11 @@ ChannelRouter.get('/', async (req, res) => {
     console.log('Fetching postable channels');
 
     if (SillyCache.has(req.originalUrl)) {
-        console.log('Serving cached data');
+        console.log('Serving cached postable channels data');
         return res.status(200).json(SillyCache.get(req.originalUrl)).end();
     }
 
-    console.log('Querying data from Airtable');
+    console.log('Querying postable channels data from Airtable');
 
     const data = await AirtableBase('Tracked Channels')
         .select()
@@ -28,7 +28,7 @@ ChannelRouter.get('/', async (req, res) => {
 
     SillyCache.set(req.originalUrl, data);
 
-    console.log('Serving queried data');
+    console.log('Serving queried postable channels data');
     res.status(200).json(data).end();
 });
 

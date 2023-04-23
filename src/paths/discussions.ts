@@ -15,14 +15,14 @@ setInterval(() => {
 }, 120_000); // 2 minutes
 
 DiscussionRouter.get('/', async (req, res) => {
-    console.log('Fetching postable channels');
+    console.log('Fetching existing discussions');
 
     if (SillyCache.has(req.originalUrl)) {
-        console.log('Serving cached data');
+        console.log('Serving cached existing discussions data');
         return res.status(200).json(SillyCache.get(req.originalUrl)).end();
     }
 
-    console.log('Querying data from Airtable');
+    console.log('Querying existing discussions data from Airtable');
 
     const q = req.query.q;
     const channelId = req.query.channelId;
@@ -47,7 +47,7 @@ DiscussionRouter.get('/', async (req, res) => {
 
     SillyCache.set(req.originalUrl, data);
 
-    console.log('Serving queried data');
+    console.log('Serving queried existing discussions data');
     res.status(200).json(data).end();
 });
 
@@ -61,7 +61,8 @@ declare module 'express-serve-static-core' {
     }
 }
 
-DiscussionRouter.use('/:forumId', async (req, res, next) => {
+DiscussionRouter.post('/:forumId', async (req, res, next) => {
+    console.log('Someone is trying to publish a signal');
     if (!req.headers.authorization) return res.status(400).end();
 
     if (!req.body.url || !req.body.reason || !req.body.keywords || req.body.keywords.length == 0) {
@@ -75,19 +76,29 @@ DiscussionRouter.use('/:forumId', async (req, res, next) => {
     }).then(res => res.json())) as RawUserData;
     if (!user || !user.id) return res.status(401).end();
 
+    console.log(`User ${user.username}#${user.discriminator} is trying to publish a signal`);
+
+    console.log('Checking if member of RADAR, UserID:', user.id);
     const member = await DiscordClient.guilds.cache
         .get('913873017287884830')
         ?.members.fetch(user.id);
 
     if (!member) return res.status(403).end();
 
-    const forumChannel = (await DiscordClient.channels.fetch(req.params.forumId)) as ForumChannel;
+    console.log('Checking if channel', req.params.forumId, 'exists');
+    const forumChannel = (await DiscordClient.channels
+        .fetch(req.params.forumId)
+        .catch(() => {})) as ForumChannel;
 
+    if (!forumChannel) return res.status(400).end();
+
+    console.log('Checking for existing webhooks');
     let webhook = await forumChannel
         .fetchWebhooks()
         .then(ws => ws.filter(w => w.owner?.id === DiscordClient.user?.id).first());
 
     if (!webhook) {
+        console.log('Creating new webhook');
         webhook = await forumChannel.createWebhook({
             name: 'PosterHook'
         });
@@ -100,12 +111,18 @@ DiscussionRouter.use('/:forumId', async (req, res, next) => {
 });
 
 DiscussionRouter.post('/:forumId/:threadId', async (req, res) => {
-    console.log('b', req.params);
-    const threadChannel = (await DiscordClient.channels.fetch(
-        req.params.threadId
-    )) as ThreadChannel;
     const webhook = req.webhook as Webhook;
     const user = req.user as RawUserData;
+    console.log(
+        `User ${user.username}#${user.discriminator} is adding onto an existing discussion: ${req.params.threadId}`
+    );
+    const threadChannel = (await DiscordClient.channels
+        .fetch(req.params.threadId)
+        .catch(() => {})) as ThreadChannel;
+
+    if (!threadChannel) return res.status(400).end();
+
+    console.log('Existing discussion name:', threadChannel.name);
     const message = await webhook.send({
         content: `${req.body.url}\n\n${req.body.reason}\n\n${(req.body.keywords as string[])
             .map(x => `\`${x}\``)
@@ -115,15 +132,21 @@ DiscussionRouter.post('/:forumId/:threadId', async (req, res) => {
         threadId: threadChannel.id
     });
 
+    console.log('Message posted, link:', message.url);
+
     res.status(200).json(message.toJSON()).end();
 });
 
 DiscussionRouter.post('/:forumId', async (req, res) => {
-    if (!req.body.title) {
-        res.sendStatus(400).end();
-    }
     const webhook = req.webhook as Webhook;
     const user = req.user as RawUserData;
+
+    console.log(`User ${user.username}#${user.discriminator} is creating a new discussion`);
+
+    if (!req.body.title) return res.sendStatus(400).end();
+
+    console.log(`Discussion name: ${req.body.title}`);
+
     const message = await webhook.send({
         content: `${req.body.url}\n\n${req.body.reason}\n\n${(req.body.keywords as string[])
             .map(x => `\`${x}\``)
@@ -133,6 +156,9 @@ DiscussionRouter.post('/:forumId', async (req, res) => {
         threadName: req.body.title
     });
 
+    console.log('Message posted, link:', message.url);
+
+    console.log('Inserting new discussion into Airtable');
     await insertThread(
         message.channel as ThreadChannel,
         req.forum as ForumChannel,

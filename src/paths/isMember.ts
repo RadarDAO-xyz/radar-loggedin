@@ -3,14 +3,14 @@ import DiscordClient from '../util/discord';
 
 const isMemberRouter = Router();
 
-const SillyCache = new Map();
-
-setInterval(() => {
-    SillyCache.clear();
-}, 120_000); // 2 minutes
-
 isMemberRouter.get('/:id', async (req, res) => {
-    const member = await DiscordClient.guilds.cache.get('913873017287884830')?.members.fetch(req.params.id);
+    console.log('Checking if user', req.params.id, 'is member of RADAR');
+
+    const member = await DiscordClient.guilds.cache
+        .get('913873017287884830')
+        ?.members.fetch(req.params.id);
+
+    console.log('User', req.params.id, 'member of RADAR?', !!member);
 
     res.status(200).json({ is_member: !!member }).end();
 });
