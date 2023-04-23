@@ -22,7 +22,8 @@ app.use(cors());
 app.use(
     minify({
         cache: false, // Caching in memory
-        js_match: /.+\.js/
+        js_match: /.+\.js/,
+        css_match: /.+\.css/
     })
 );
 app.use('/static', express.static(path.join(__dirname, '../static')));

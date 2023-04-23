@@ -1,0 +1,23 @@
+.found-box {
+    background-color: rgb(255, 255, 255);
+    width: 100%;
+    height: 200px;
+    overflow-y: scroll;
+}
+
+.found-box-channel {
+    padding-left: 10px;
+    color: #8f8f8f;
+    font-family: IBM Plex Mono, sans-serif;
+    font-size: 12px;
+    background-color: #f3f3f3;
+    margin: 5px;
+}
+
+.found-box-channel .selected {
+    background-color: #a1a1a1;
+}
+
+.found-box-channel:hover {
+    background-color: #a1a1a1;
+}
