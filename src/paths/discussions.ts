@@ -3,7 +3,7 @@ import { normaliseThreads } from '../util/AirtableUtil';
 import AirtableBase from '../util/airtable';
 import DiscordClient from '../util/discord';
 import { ForumChannel, ThreadChannel, Webhook } from 'discord.js';
-import fetch from 'node-fetch';
+import fetch, { Headers } from 'node-fetch';
 import { RawUserData } from 'discord.js/typings/rawDataTypes';
 
 const DiscussionRouter = Router();
