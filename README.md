@@ -2,6 +2,8 @@
 
 This is an api for the [signals.radardao.xyz](https://www.alphatest.signals.radardao.xyz/) which may evolve into something more (catchall api for radar?)
 
+This also hosts any client-side scripts and some css that the signals page uses 
+
 ## Development
 
 To start a dev instance, `npm run start:dev`
