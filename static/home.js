@@ -243,12 +243,12 @@ $('#submit-signal').click(async () => {
     }
 
     if (newpost) {
-        if (!$('#Discussion-title').val()) {
+        if (keywords.length == 0) {
+            return $('#submit-signal').text('KEYWORDS ARE MISSING');
+        } else if (!$('#Discussion-title').val()) {
             return $('#submit-signal').text('TITLE IS MISSING');
         } else if ($('#Create-post-in-channel').val() === 'not') {
             return $('#submit-signal').text('CHANNEL NOT SELECTED');
-        } else if (keywords.length == 0) {
-            return $('#submit-signal').text('KEYWORDS ARE MISSING');
         }
     } else {
         // EXISTING
