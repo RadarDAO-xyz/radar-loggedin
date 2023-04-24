@@ -45,7 +45,7 @@ async function checkRadarMember() {
         const { is_member } = await fetch(
             `${API}/isMember/${await getUser().then(u => u.id)}`
         ).then(r => r.json());
-        if (!is_member) logout();
+        if (!is_member) logout('/login-page');
     }
 }
 
@@ -60,11 +60,12 @@ if (loginButton) {
 
 const logoutButton = document.getElementById('logout');
 
-async function logout() {
+async function logout(newloc = '') {
     localStorage.removeItem(tokenStoreLoc);
     localStorage.removeItem(tokenExpLoc);
     document.location.hash = '';
-    document.location.reload();
+    document.location.pathname = newloc || document.location.pathname;
+    // document.location.reload();
 }
 
 if (logoutButton) logoutButton.addEventListener('click', logout);
