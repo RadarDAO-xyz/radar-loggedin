@@ -3,7 +3,6 @@
     width: 100%;
     height: 200px;
     overflow-y: scroll;
-    cursor: pointer;
 }
 
 .found-box-channel {
@@ -14,6 +13,7 @@
     background-color: #f3f3f3;
     margin: 5px;
     border-radius: 2px;
+    cursor: pointer;
 }
 
 .found-box-channel.selected {
@@ -32,13 +32,15 @@
 }
 
 .found-tag-box-tag {
-    padding-left: 10px;
+    padding: 5px 10px;
     color: #8f8f8f;
     font-family: IBM Plex Mono, sans-serif;
     font-size: 12px;
     background-color: #f3f3f3;
     margin: 5px;
     border-radius: 2px;
+    white-space: nowrap;
+    cursor: pointer;
 }
 
 .found-tag-box-tag:hover {
