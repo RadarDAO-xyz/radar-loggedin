@@ -61,7 +61,7 @@ declare module 'express-serve-static-core' {
     }
 }
 
-DiscussionRouter.post('/:forumId', async (req, res, next) => {
+DiscussionRouter.use('/:forumId', async (req, res, next) => {
     console.log('Someone is trying to publish a signal');
     if (!req.headers.authorization) return res.status(400).end();
 
