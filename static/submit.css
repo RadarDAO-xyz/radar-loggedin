@@ -3,6 +3,7 @@
     width: 100%;
     height: 200px;
     overflow-y: scroll;
+    cursor: pointer;
 }
 
 .found-box-channel {
@@ -12,10 +13,12 @@
     font-size: 12px;
     background-color: #f3f3f3;
     margin: 5px;
+    border-radius: 2px;
 }
 
 .found-box-channel.selected {
     background-color: #d5d5d5;
+    outline: gray 2px solid;
 }
 
 .found-box-channel:hover {
