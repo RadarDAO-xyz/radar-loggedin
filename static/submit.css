@@ -24,3 +24,23 @@
 .found-box-channel:hover {
     background-color: #d5d5d5;
 }
+
+.found-tag-box {
+    display: flex;
+    flex-direction: row;
+    overflow-x: scroll;
+}
+
+.found-tag-box-tag {
+    padding-left: 10px;
+    color: #8f8f8f;
+    font-family: IBM Plex Mono, sans-serif;
+    font-size: 12px;
+    background-color: #f3f3f3;
+    margin: 5px;
+    border-radius: 2px;
+}
+
+.found-tag-box-tag:hover {
+    background-color: #d5d5d5;
+}
