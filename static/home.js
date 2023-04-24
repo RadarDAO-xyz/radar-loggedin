@@ -16,6 +16,7 @@ if (isLoggedIn()) {
     $('#logout').show();
     $('#w-tabs-0-data-w-tab-0').show();
 } else {
+    document.location.pathname = 'login-page';
     $('#profilename').text('Login');
     $('#profile').show();
     $('#logout').hide();
