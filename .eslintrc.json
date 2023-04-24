@@ -16,7 +16,8 @@
         "getExpiresIn": "readonly",
         "truncate": "readonly",
         "urlParams": "readonly",
-        "getUser": "readonly"
+        "getUser": "readonly",
+        "BASE_URI": "readonly"
     },
     "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
     "parserOptions": {

@@ -66,13 +66,13 @@ const foundBox = $('<div id="found-box" class="found-box"></div>').hide();
 $('.find-related-discord-discussion-block').first().append(foundBox);
 
 /**
- * Only runs every second, to avoid overcalled the api
+ * Only runs every second, to avoid overcalling the api
  * Runs again if input has changed while api was being called
  * to avoid showing outdated results
  */
 let waiting = false;
 let lastSearched = '';
-function runIfSafe() {
+function searchDiscussions() {
     if (waiting) return;
     waiting = true;
     setTimeout(async () => {
@@ -84,7 +84,7 @@ function runIfSafe() {
         populateChannelBox(discussions);
         waiting = false;
         if (lastSearched !== $('#Search-channels').val() + $('#Channels').val()) {
-            runIfSafe();
+            searchDiscussions();
         }
     }, 1000);
 }
@@ -108,11 +108,89 @@ function populateChannelBox(discussions) {
 /**
  * Update the results live by tracking changes in form
  */
-$('#Search-channels').keypress(() => runIfSafe());
+$('#Search-channels').keypress(() => searchDiscussions());
 $('#Search-channels').keydown(ev => {
-    if (ev.key === 'Backspace' || ev.key === 'Delete') runIfSafe();
+    if (ev.key === 'Backspace' || ev.key === 'Delete') searchDiscussions();
 });
-$('#Channels').change(() => runIfSafe());
+$('#Channels').change(() => searchDiscussions());
+
+// Hide the search box if not focused
+$('#Search-channels').focus(() => $('#found-tag-box').hide());
+
+const getLastTag = x =>
+    x
+        .split(',')
+        .map(x => x.trim())
+        .pop();
+
+const setLastTag = x => {
+    let newArr = $('#submit-tags').val().split(',').map(x => x.trim());
+    newArr[newArr.length - 1] = x;
+    $('#submit-tags').val(newArr.join(', '));
+};
+
+/**
+ * Fetches all the existing tags from the API
+ */
+async function fetchTags() {
+    return fetch(`${BASE_URI}/tags`)
+        .then(r => r.json())
+        .then(arr => arr.map(x => x.name));
+}
+
+/**
+ * This box will display the filtered tags from the search
+ */
+const foundTagBox = $('<div id="found-tag-box" class="found-tag-box"></div>').hide();
+foundTagBox.insertAfter($('#submit-tags'));
+
+/**
+ * This populates the `#found-tag-box` with filtered tags from the search
+ */
+function populateTagBox(tags) {
+    $('#found-tag-box').show().empty();
+    tags.forEach(tag => {
+        const element = $(`<div class="found-tag-box-tag">${tag}</div>`).click(function () {
+            setLastTag(tag);
+        });
+        $('#found-tag-box').append(element);
+    });
+}
+
+// Hide the channel box if tags focused
+$('#submit-tags').focus(() => $('#found-box').hide());
+
+/**
+ * Only runs every second, to avoid overcalling the api
+ * Runs again if input has changed while api was being called
+ * to avoid showing outdated results
+ */
+let waiting2 = false;
+let lastSearched2 = '';
+let availableTags = fetchTags();
+function searchTags() {
+    if (waiting2) return;
+    waiting2 = true;
+    setTimeout(async () => {
+        lastSearched2 = getLastTag($('#submit-tags').val());
+        const tags = await availableTags.then(x =>
+            x.filter(x => x.match(new RegExp(`.*${getLastTag($('#submit-tags').val())}.*`, 'i')))
+        );
+        populateTagBox(tags.slice(0, 10));
+        waiting2 = false;
+        if (lastSearched2 !== getLastTag($('#submit-tags').val())) {
+            searchTags();
+        }
+    }, 1000);
+}
+
+/**
+ * Tracks input to show preexisting tags to the user
+ */
+$('#submit-tags').keypress(() => searchTags());
+$('#submit-tags').keydown(ev => {
+    if (ev.key === 'Backspace' || ev.key === 'Delete') searchTags();
+});
 
 /**
  * This part clears the potention error message on the #submit-signal button
