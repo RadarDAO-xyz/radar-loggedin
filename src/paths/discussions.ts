@@ -65,7 +65,7 @@ DiscussionRouter.use('/:forumId', async (req, res, next) => {
     console.log('Someone is trying to publish a signal');
     if (!req.headers.authorization) return res.status(400).end();
 
-    if (!req.body.url || !req.body.reason || !req.body.keywords || req.body.keywords.length == 0) {
+    if (!req.body.url || !req.body.reason) {
         return res.sendStatus(400).end();
     }
 
@@ -124,9 +124,7 @@ DiscussionRouter.post('/:forumId/:threadId', async (req, res) => {
 
     console.log('Existing discussion name:', threadChannel.name);
     const message = await webhook.send({
-        content: `${req.body.url}\n\n${req.body.reason}\n\n${(req.body.keywords as string[])
-            .map(x => `\`${x}\``)
-            .join(' ')}`,
+        content: `${req.body.url}\n\n${req.body.reason}`,
         username: user.username,
         avatarURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`,
         threadId: threadChannel.id
@@ -144,6 +142,7 @@ DiscussionRouter.post('/:forumId', async (req, res) => {
     console.log(`User ${user.username}#${user.discriminator} is creating a new discussion`);
 
     if (!req.body.title) return res.sendStatus(400).end();
+    if (!req.body.keywords || req.body.keywords.length == 0) return res.sendStatus(400).end();
 
     console.log(`Discussion name: ${req.body.title}`);
 

@@ -124,7 +124,10 @@ const getLastTag = x =>
         .pop();
 
 const setLastTag = x => {
-    let newArr = $('#submit-tags').val().split(',').map(x => x.trim());
+    let newArr = $('#submit-tags')
+        .val()
+        .split(',')
+        .map(x => x.trim());
     newArr[newArr.length - 1] = x;
     $('#submit-tags').val(newArr.join(', '));
 };
@@ -210,11 +213,13 @@ $('#Discussion-title').keydown(inputUpdated);
 /**
  * This part of the script handles signal submission
  */
+$('#submit-tags').hide();
 let newpost = false;
 $('.underline.signal-submit')
     .first()
     .click(() => {
         newpost = true;
+        $('#submit-tags').show();
     });
 
 let submitting = false; // You can only submit once
@@ -235,14 +240,15 @@ $('#submit-signal').click(async () => {
         return $('#submit-signal').text('URL IS MISSING');
     } else if (!submittedDescription) {
         return $('#submit-signal').text('WHY IS MISSING');
-    } else if (keywords.length == 0) {
-        return $('#submit-signal').text('KEYWORDS ARE MISSING');
     }
+
     if (newpost) {
         if (!$('#Discussion-title').val()) {
             return $('#submit-signal').text('TITLE IS MISSING');
         } else if ($('#Create-post-in-channel').val() === 'not') {
             return $('#submit-signal').text('CHANNEL NOT SELECTED');
+        } else if (keywords.length == 0) {
+            return $('#submit-signal').text('KEYWORDS ARE MISSING');
         }
     } else {
         // EXISTING
