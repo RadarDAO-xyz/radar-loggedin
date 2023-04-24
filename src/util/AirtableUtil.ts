@@ -32,6 +32,7 @@ export async function insertThread(
             'Signal Channel': channel.name,
             Tags: tags,
             Curator: curator.username + '#' + curator.discriminator,
+            Comments: 1,
             Timestamp: SnowflakeUtil.deconstruct(thread.id).timestamp.toString(),
             curatorId: curator.id,
             channelId: channel.id,
