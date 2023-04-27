@@ -124,7 +124,7 @@ DiscussionRouter.post('/:forumId/:threadId', async (req, res) => {
 
     console.log('Existing discussion name:', threadChannel.name);
     const message = await webhook.send({
-        content: `${req.body.url}\n\n${req.body.reason}`,
+        content: `${req.body.url}\n\n${req.body.reason}\n||<@${user.id}>||`,
         username: user.username,
         avatarURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`,
         threadId: threadChannel.id
@@ -149,7 +149,7 @@ DiscussionRouter.post('/:forumId', async (req, res) => {
     const message = await webhook.send({
         content: `${req.body.url}\n\n${req.body.reason}\n\n${(req.body.keywords as string[])
             .map(x => `\`${x}\``)
-            .join(' ')}`,
+            .join(' ')}\n||<@${user.id}>||`,
         username: user.username,
         avatarURL: `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`,
         threadName: req.body.title
