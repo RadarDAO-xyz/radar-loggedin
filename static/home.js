@@ -216,12 +216,16 @@ $('#Discussion-title').keydown(inputUpdated);
  */
 $('#submit-tags').hide();
 let newpost = false;
-$('.underline.signal-submit')
-    .first()
-    .click(() => {
-        newpost = true;
-        $('#submit-tags').show();
-    });
+$('.tab-link-tab-1.w-inline-block.w-tab-link').click(() => {
+    // Add signals to an existing discussion
+    newpost = false;
+    $('#submit-tags').hide();
+});
+$('.tab-link-tab-2.w-inline-block.w-tab-link').click(() => {
+    // Create New Discord Discussion
+    newpost = true;
+    $('#submit-tags').show();
+});
 
 let submitting = false; // You can only submit once
 $('#submit-signal').click(async () => {
