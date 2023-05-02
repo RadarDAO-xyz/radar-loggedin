@@ -1,4 +1,4 @@
-import { Request, Response, Router, urlencoded } from 'express';
+import { Request, Response, Router, json } from 'express';
 import {
     WaitingForName,
     addWaitlist,
@@ -8,7 +8,7 @@ import {
 
 const JoinWaitlistRouter = Router();
 
-JoinWaitlistRouter.use(urlencoded({ extended: true }));
+JoinWaitlistRouter.use(json({}));
 
 interface JoinWailistRouter extends Request {
     body: Partial<{
