@@ -50,17 +50,6 @@ async function checkRadarMember() {
     }
 }
 
-const loginButton = document.getElementById('login');
-
-if (loginButton) {
-    loginButton.addEventListener('click', ev => {
-        ev.preventDefault();
-        document.location = `https://discord.com/oauth2/authorize?&client_id=${CLIENT_ID}&response_type=token&scope=identify%20email&redirect_uri=${location.protocol}//${location.host}/`;
-    });
-}
-
-const logoutButton = document.getElementById('logout');
-
 async function logout(newloc = '') {
     localStorage.removeItem(tokenStoreLoc);
     localStorage.removeItem(tokenExpLoc);
@@ -68,7 +57,5 @@ async function logout(newloc = '') {
     document.location.pathname = newloc || document.location.pathname;
     // document.location.reload();
 }
-
-if (logoutButton) logoutButton.addEventListener('click', logout());
 
 checkRadarMember();
