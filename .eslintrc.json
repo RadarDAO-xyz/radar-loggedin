@@ -18,7 +18,8 @@
         "urlParams": "readonly",
         "getUser": "readonly",
         "BASE_URI": "readonly",
-        "logout": "readonly"
+        "logout": "readonly",
+        "waitingForName": "readonly"
     },
     "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
     "parserOptions": {
