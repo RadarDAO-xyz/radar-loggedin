@@ -11,7 +11,8 @@ declare global {
         interface ProcessEnv {
             MONGO_URL: string;
             AIRTABLE_API_KEY: string;
-            AIRTABLE_BASE_ID: string;
+            AIRTABLE_SIGNAL_THREADS: string;
+            AIRTABLE_WAITLIST: string;
             PORT?: string;
             NODE_ENV?: 'development' | 'production';
         }

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import DiscordClient from '../util/discord';
+import DiscordClient from '../../util/discord';
 
 const isMemberRouter = Router();
 
