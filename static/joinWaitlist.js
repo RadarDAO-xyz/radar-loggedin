@@ -7,7 +7,7 @@ if (waitingForName) {
         if (submitted) return;
 
         if (!$('#email-textbox').val()) {
-            return $('#submit-button').text('Email is required');
+            return $('#submit-button').val('Email is required');
         }
 
         submitted = true;
@@ -25,9 +25,9 @@ if (waitingForName) {
             .catch(() => {});
         $('#email-form').hide();
         if (res?.waitlisted) {
-            $('.success-message.w-form-done').show();
+            $('.w-form-done').show();
         } else {
-            $('.error-message.w-form-fail').show();
+            $('.w-form-fail').show();
         }
         console.log(res);
     });
