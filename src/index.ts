@@ -20,10 +20,7 @@ import minify from 'express-minify';
 import cors from 'cors';
 
 // Express Routers
-import UserRouter from './paths/user';
-import ChannelRouter from './paths/channels';
-import DiscussionRouter from './paths/discussions';
-import isMemberRouter from './paths/isMember';
+import SignalsRouter from './paths/signals';
 
 const app = express();
 
@@ -38,10 +35,7 @@ app.use(
 );
 app.use('/static', express.static(path.join(__dirname, '../static')));
 
-app.use('/user', UserRouter);
-app.use('/channels', ChannelRouter);
-app.use('/discussions', DiscussionRouter);
-app.use('/isMember', isMemberRouter);
+app.use('/signals', SignalsRouter);
 
 app.use((req, res) => {
     res.status(404).end('Not Found');

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import AirtableBase from '../util/airtable';
+import AirtableBase from '../../util/airtable';
 
 const ChannelRouter = Router();
 
