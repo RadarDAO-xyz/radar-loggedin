@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { fetchItAll } from '../util/MongoUtil';
-import FrequencyCouter from '../util/FrequencyCounter';
-import { getThreadsForUser, normaliseThreads as normalizeThreads } from '../util/AirtableUtil';
+import { fetchItAll } from '../../util/MongoUtil';
+import FrequencyCouter from '../../util/FrequencyCounter';
+import { getThreadsForUser, normaliseThreads as normalizeThreads } from '../../util/SignalThreads';
 
 const UserRouter = Router();
 

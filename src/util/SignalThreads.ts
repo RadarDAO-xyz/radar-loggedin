@@ -1,14 +1,20 @@
+import Airtable from 'airtable';
 import { Records } from 'airtable/lib/records';
-import AirtableBase from './airtable';
 import { FieldSet } from 'airtable/lib/field_set';
 import { ForumChannel, SnowflakeUtil, ThreadChannel, User } from 'discord.js';
 import { RawUserData } from 'discord.js/typings/rawDataTypes';
+
+Airtable.configure({ apiKey: process.env.AIRTABLE_API_KEY });
+
+const SignalThreads = Airtable.base(process.env.AIRTABLE_SIGNAL_THREADS);
+
+export default SignalThreads;
 
 /**
  * Fetches all discussions for a curator
  */
 export async function getThreadsForUser(curatorId: string) {
-    return AirtableBase('Table 1')
+    return SignalThreads('Table 1')
         .select({
             filterByFormula: `{curatorId} = "${curatorId}"`,
             view: 'Sorted By Time'
@@ -25,7 +31,7 @@ export async function insertThread(
     tags: string[],
     curator: RawUserData | User
 ) {
-    return AirtableBase('Table 1').create(
+    return SignalThreads('Table 1').create(
         {
             'Thread Name': thread.name,
             Link: `https://ptb.discord.com/channels/913873017287884830/${thread.id}`,

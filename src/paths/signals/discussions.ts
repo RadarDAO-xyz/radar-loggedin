@@ -1,7 +1,6 @@
-import { Router, json } from 'express';
-import { insertThread, normaliseThreads } from '../util/AirtableUtil';
-import AirtableBase from '../util/airtable';
-import DiscordClient from '../util/discord';
+import { Request, Router, json } from 'express';
+import SignalThreads, { insertThread, normaliseThreads } from '../../util/SignalThreads';
+import DiscordClient from '../../util/discord';
 import { ForumChannel, ThreadChannel, Webhook } from 'discord.js';
 import fetch, { Headers } from 'node-fetch';
 import { RawUserData } from 'discord.js/typings/rawDataTypes';
@@ -37,7 +36,7 @@ DiscussionRouter.get('/', async (req, res) => {
 
     console.log(formulas.length > 0 ? `AND(${formulas.join(', ')})` : 'TRUE()');
 
-    const data = await AirtableBase('Table 1')
+    const data = await SignalThreads('Table 1')
         .select({
             filterByFormula: formulas.length > 0 ? `AND(${formulas.join(', ')})` : 'TRUE()'
         })
@@ -53,15 +52,13 @@ DiscussionRouter.get('/', async (req, res) => {
 
 DiscussionRouter.use(json());
 
-declare module 'express-serve-static-core' {
-    export interface Request {
-        forum?: ForumChannel;
-        user?: RawUserData;
-        webhook?: Webhook;
-    }
+interface DiscussionPostRequest extends Request {
+    forum?: ForumChannel;
+    user?: RawUserData;
+    webhook?: Webhook;
 }
 
-DiscussionRouter.use('/:forumId', async (req, res, next) => {
+DiscussionRouter.use('/:forumId', async (req: DiscussionPostRequest, res, next) => {
     console.log('Someone is trying to publish a signal');
     if (!req.headers.authorization) return res.status(400).end();
 
@@ -110,7 +107,7 @@ DiscussionRouter.use('/:forumId', async (req, res, next) => {
     next();
 });
 
-DiscussionRouter.post('/:forumId/:threadId', async (req, res) => {
+DiscussionRouter.post('/:forumId/:threadId', async (req: DiscussionPostRequest, res) => {
     const webhook = req.webhook as Webhook;
     const user = req.user as RawUserData;
     console.log(
@@ -135,7 +132,7 @@ DiscussionRouter.post('/:forumId/:threadId', async (req, res) => {
     res.status(200).json(message.toJSON()).end();
 });
 
-DiscussionRouter.post('/:forumId', async (req, res) => {
+DiscussionRouter.post('/:forumId', async (req: DiscussionPostRequest, res) => {
     const webhook = req.webhook as Webhook;
     const user = req.user as RawUserData;
 

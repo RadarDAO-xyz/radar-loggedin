@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import AirtableBase from '../../util/airtable';
+import SignalThreads from '../../util/SignalThreads';
 
 const ChannelRouter = Router();
 
@@ -19,7 +19,7 @@ ChannelRouter.get('/', async (req, res) => {
 
     console.log('Querying postable channels data from Airtable');
 
-    const data = await AirtableBase('Tracked Channels')
+    const data = await SignalThreads('Tracked Channels')
         .select()
         .all()
         .then(x =>
