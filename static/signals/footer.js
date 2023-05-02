@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const API = 'https://api.radardao.xyz';
+const API = 'https://api.radardao.xyz/signals';
 
 const tokenStoreLoc = 'discord_access_token';
 const tokenExpLoc = 'discord_expires_in';
