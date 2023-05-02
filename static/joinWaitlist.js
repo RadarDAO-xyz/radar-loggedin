@@ -14,9 +14,11 @@ $('#email-form').submit(async e => {
             email: $('#email-textbox').val(),
             waitingFor: $('#waitingfor').text()
         })
-    }).then(r => r.json());
+    })
+        .then(r => r.json())
+        .catch(() => {});
     $('#email-form').hide();
-    if (res.waitlisted) {
+    if (res?.waitlisted) {
         $('.success-message.w-form-done').show();
     } else {
         $('.error-message.w-form-fail').show();
