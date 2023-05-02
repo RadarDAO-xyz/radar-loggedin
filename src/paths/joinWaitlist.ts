@@ -24,16 +24,22 @@ JoinWaitlistRouter.post('/', async (req: JoinWailistRouter, res: Response) => {
     if (!req.body.waitingFor) return res.status(400).end();
     if (!waitingForStrs.includes(req.body.waitingFor)) return res.status(400).end();
 
+    console.log(`User requested a waitlist [${req.body.email}] [${req.body.waitingFor}]`);
+
     const existing = await getExistingWaitlist(req.body.email);
 
     let newRecord;
 
     if (!existing) {
+        console.log(`Creating new whitelist entry [${req.body.email}] [${req.body.waitingFor}]`);
         newRecord = await insertWaitlist({
             email: req.body.email,
             waitingFor: req.body.waitingFor as WaitingForName
         });
     } else {
+        console.log(
+            `Adding to existing whitelist entry [${req.body.email}] [${req.body.waitingFor}]`
+        );
         newRecord = await addWaitlist(existing, req.body.waitingFor as WaitingForName);
     }
 
