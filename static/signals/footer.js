@@ -69,6 +69,6 @@ async function logout(newloc = '') {
     // document.location.reload();
 }
 
-if (logoutButton) logoutButton.addEventListener('click', logout);
+if (logoutButton) logoutButton.addEventListener('click', logout());
 
 checkRadarMember();
