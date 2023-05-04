@@ -26,6 +26,8 @@ JoinWaitlistRouter.post('/', async (req: JoinWailistRouter, res: Response) => {
 
     console.log(`User requested a waitlist [${req.body.email}] [${req.body.waitingFor}]`);
 
+    req.body.email = req.body.email.trim();
+
     const existing = await getExistingWaitlist(req.body.email);
 
     let newRecord;

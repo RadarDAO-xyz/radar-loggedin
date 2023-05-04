@@ -11,7 +11,7 @@ export type WaitingForName = 'RADAR Discover' | 'RADAR Launch' | 'More play-full
 export function getExistingWailist(email: string) {
     return Waitlist('Table 1')
         .select({
-            filterByFormula: `{Email} = "${email}"`
+            filterByFormula: `LOWER({Email}) = LOWER("${email}")`
         })
         .all()
         .then(x => x[0]);
