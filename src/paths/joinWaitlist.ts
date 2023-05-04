@@ -8,9 +8,9 @@ import {
 
 const JoinWaitlistRouter = Router();
 
-JoinWaitlistRouter.use(json({}));
+JoinWaitlistRouter.use(json());
 
-interface JoinWailistRouter extends Request {
+interface JoinWailistPostRequest extends Request {
     body: Partial<{
         email: string;
         waitingFor: string;
@@ -19,7 +19,7 @@ interface JoinWailistRouter extends Request {
 
 const waitingForStrs = ['RADAR Discover', 'RADAR Launch', 'More play-full future'];
 
-JoinWaitlistRouter.post('/', async (req: JoinWailistRouter, res: Response) => {
+JoinWaitlistRouter.post('/', async (req: JoinWailistPostRequest, res: Response) => {
     if (!req.body.email) return res.status(400).end();
     if (!req.body.waitingFor) return res.status(400).end();
     if (!waitingForStrs.includes(req.body.waitingFor)) return res.status(400).end();
