@@ -1,0 +1,27 @@
+Check localstorage for previous data
+if localstorage has data
+    check if quiz enabled
+    get email
+    if quiz is disabled
+        hide all quiz questions
+else
+    show popup
+    store email and quiz status
+
+Check if email is registered
+
+If email is registered
+    Fetch selected quiz questions (/quiz/answers?email)
+else
+    create a new quiz entry (/quiz/answers?email)
+
+Check if can see answers (/quiz/archetype?email)
+
+On answer selected (quiz choice wrapper, on each child) (detect question number by checking parent)
+    send to airtable (POST /quiz/answers {email, question, answer})
+    Update the q number
+    Check if can see answers (/quiz/archetype?email)
+
+Other endpoints:
+    POST /quiz/status?email - Sets whether or not you're passing the quiz
+    GET /quiz/status?email - Gets whether or not you're passing the quiz

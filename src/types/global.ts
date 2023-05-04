@@ -13,6 +13,7 @@ declare global {
             AIRTABLE_API_KEY: string;
             AIRTABLE_SIGNAL_THREADS: string;
             AIRTABLE_WAITLIST: string;
+            AIRTABLE_QUIZ_STORAGE: string;
             PORT?: string;
             NODE_ENV?: 'development' | 'production';
         }
