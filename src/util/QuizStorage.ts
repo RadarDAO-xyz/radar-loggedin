@@ -1,13 +1,15 @@
-import Airtable from 'airtable';
+import Airtable, { FieldSet, Record } from 'airtable';
 
 Airtable.configure({ apiKey: process.env.AIRTABLE_API_KEY });
 
 const QuizStorage = Airtable.base(process.env.AIRTABLE_QUIZ_STORAGE);
 
+const emailFilter = (e: string) => `LOWER({Email}) = LOWER("${e}")`;
+
 export async function getQuizStatus(email: string) {
     return QuizStorage.table('Quiz Status')
         .select({
-            filterByFormula: `{Email} = "${email}"`
+            filterByFormula: emailFilter(email)
         })
         .all()
         .then(x => x[0]);
@@ -33,6 +35,59 @@ export async function upsertQuizStatus(email: string, quizStatus: boolean) {
         });
     } else {
         return setQuizStatus(email, quizStatus);
+    }
+}
+
+export async function resolveAnswersRecord(recordIdOrRecord: string | Record<FieldSet>) {
+    if (typeof recordIdOrRecord === 'string') {
+        return QuizStorage('Table 1').find(recordIdOrRecord);
+    } else {
+        return recordIdOrRecord;
+    }
+}
+
+export async function getAnswers(email: string) {
+    return QuizStorage.table('Answers')
+        .select({
+            filterByFormula: emailFilter(email)
+        })
+        .all()
+        .then(x => x[0]);
+}
+
+export async function createAnswers(email: string): Promise<Record<FieldSet>>;
+export async function createAnswers(
+    email: string,
+    q: number,
+    a: QuizAnswer
+): Promise<Record<FieldSet>>;
+export async function createAnswers(email: string, q?: number, a?: QuizAnswer) {
+    return QuizStorage.table('Answers').create(
+        q ? { Email: email, [q.toString()]: a } : { Email: email },
+        { typecast: true }
+    );
+}
+
+export type QuizAnswer = 'a' | 'b' | 'c' | 'd' | 'e';
+
+export async function setAnswer(record: string | Record<FieldSet>, q: number, a: QuizAnswer) {
+    const existing = await resolveAnswersRecord(record);
+
+    return QuizStorage.table('Answers').update(
+        existing.id,
+        {
+            [q.toString()]: a
+        },
+        { typecast: true }
+    );
+}
+
+export async function upsertAnswer(email: string, q: number, a: QuizAnswer) {
+    const answers = await getAnswers(email);
+    if (!answers) {
+        return createAnswers(email, q, a);
+    } else {
+        return setAnswer(answers, q, a);
     }
 }
 
