@@ -26,6 +26,11 @@ import QuizRouter from './paths/quiz';
 
 const app = express();
 
+app.use((req, res, next) => {
+    console.log('Receiving', req.method, 'request at', req.originalUrl);
+    next();
+});
+
 app.use(cors());
 
 app.use(

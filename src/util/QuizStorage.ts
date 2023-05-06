@@ -49,7 +49,20 @@ export async function resolveAnswersRecord(recordIdOrRecord: string | Record<Fie
     }
 }
 
-export async function getAnswers(email: string) {
+export function normalizeAnswers(answers: Record<FieldSet> | undefined) {
+    if (!answers) return [];
+
+    const newAnswers = [];
+
+    for (const k in answers.fields) {
+        if (isNaN(k as unknown as number)) continue;
+        newAnswers.push({ question: parseInt(k), answer: answers.fields[k] });
+    }
+
+    return newAnswers;
+}
+
+export async function getAnswers(email: string): Promise<Record<FieldSet> | undefined> {
     return QuizStorage.table('Answers')
         .select({
             filterByFormula: emailFilter(email)
@@ -61,37 +74,45 @@ export async function getAnswers(email: string) {
 export async function createAnswers(email: string): Promise<Record<FieldSet>>;
 export async function createAnswers(
     email: string,
-    q: number,
+    q: string,
     a: QuizAnswer
 ): Promise<Record<FieldSet>>;
-export async function createAnswers(email: string, q?: number, a?: QuizAnswer) {
-    return QuizStorage.table('Answers').create(
-        q ? { Email: email, [q.toString()]: a } : { Email: email },
-        { typecast: true }
-    );
+export async function createAnswers(email: string, q?: string, a?: QuizAnswer) {
+    return QuizStorage.table('Answers').create(q ? { Email: email, [q]: a } : { Email: email }, {
+        typecast: true
+    });
 }
 
 export type QuizAnswer = 'a' | 'b' | 'c' | 'd' | 'e';
 
-export async function setAnswer(record: string | Record<FieldSet>, q: number, a: QuizAnswer) {
+export async function setAnswer(record: string | Record<FieldSet>, q: string, a: QuizAnswer) {
     const existing = await resolveAnswersRecord(record);
 
     return QuizStorage.table('Answers').update(
         existing.id,
         {
-            [q.toString()]: a
+            [q]: a
         },
         { typecast: true }
     );
 }
 
-export async function upsertAnswer(email: string, q: number, a: QuizAnswer) {
+export async function upsertAnswer(email: string, q: string, a: QuizAnswer) {
     const answers = await getAnswers(email);
     if (!answers) {
         return createAnswers(email, q, a);
     } else {
         return setAnswer(answers, q, a);
     }
+}
+
+export function normalizeArchetype(archetype: Record<FieldSet>) {
+    return {
+        id: archetype.fields['Archetype ID'],
+        name: archetype.fields['Archetype Name'],
+        description: archetype.fields['Archetype Description'],
+        image: archetype.fields['Archetype Image URL']
+    };
 }
 
 export async function getArchetypes() {
@@ -108,10 +129,10 @@ export async function getResult(email: string) {
 export type PartialArchetype = { id: number; name: string };
 
 export async function createResult(email: string, archetype: PartialArchetype) {
-    return QuizStorage.table('Quiz Status').create(
+    return QuizStorage.table('Results').create(
         {
             Email: email,
-            Archetype: archetype.id,
+            Archetype: archetype.id.toString(),
             'Archetype Name': archetype.name
         },
         { typecast: true }
@@ -122,10 +143,14 @@ export async function upsertResult(email: string, archetype: PartialArchetype) {
     const existing = await getResult(email);
 
     if (existing) {
-        return QuizStorage.table('Results').update(existing.id, {
-            Archetype: archetype.id,
-            'Archetype Name': archetype.name
-        });
+        return QuizStorage.table('Results').update(
+            existing.id,
+            {
+                Archetype: archetype.id.toString(),
+                'Archetype Name': archetype.name
+            },
+            { typecast: true }
+        );
     } else {
         return createResult(email, archetype);
     }

@@ -31,6 +31,10 @@ function getRequest(path, query) {
     const url = new URL(`${API}${path}`);
     for (let key in query) url.searchParams.set(key, query[key]);
     return fetch(url)
+        .then(r => {
+            if (r.ok) return r;
+            else throw new Error('GET Fetch Request Failed');
+        })
         .then(r => r.json())
         .catch(() => {});
 }
@@ -43,6 +47,10 @@ function postRequest(path, body) {
         headers,
         body: JSON.stringify(body)
     })
+        .then(r => {
+            if (r.ok) return r;
+            else throw new Error('POST Fetch Request Failed');
+        })
         .then(r => r.json())
         .catch(() => {});
 }
@@ -87,25 +95,36 @@ function resolveQuestionNumber(elem) {
     }
 }
 
+let questionsAnswered = 0;
 async function loadAnswers(answers) {
     answers.forEach(row => {
         const { question, answer } = row;
-        const choiceWrapper = $(`_${question}`).children('.quiz-choice-wrapper').first();
+        const choiceWrapper = $(`._${question}`).children('.quiz-choice-wrapper').first();
         choiceWrapper.children().removeClass('selected');
-        choiceWrapper.children(answer).addClass('selected');
+        choiceWrapper.children(`.${answer}`).addClass('selected');
     });
+    questionsAnswered = answers.length;
     updateQsAnswered(answers.length);
-
-    if (answers.length > 10) {
-        loadArchetype(await fetchArchetype());
-    }
 }
 
 function fetchArchetype() {
     return getRequest('/archetype', { email: getEmail() });
 }
 
-function loadArchetype() {}
+function loadArchetype(result) {
+    $('.results-title').text(result.archetype.name);
+    $('.results-description').text(result.archetype.description);
+    $('.results-image').attr('src', result.archetype.image);
+    $('.percentage.enchantress').text(`${result.resultPs.a}%`);
+    $('.percentage.healer').text(`${result.resultPs.b}%`);
+    $('.percentage.mediator').text(`${result.resultPs.c}%`);
+    $('.percentage.teacher').text(`${result.resultPs.d}%`);
+    $('.percentage.artist').text(`${result.resultPs.e}%`);
+}
+
+$('#see-results').click(async () => {
+    if (questionsAnswered == 10) loadArchetype(await fetchArchetype());
+});
 
 $('.quiz-choice-wrapper')
     .children()
