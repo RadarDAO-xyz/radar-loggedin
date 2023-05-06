@@ -29,9 +29,13 @@ export async function upsertQuizStatus(email: string, quizStatus: boolean) {
     const existing = await getQuizStatus(email);
 
     if (existing) {
-        return QuizStorage.table('Quiz Status').update(existing.id, {
-            'Quiz Status': quizStatus
-        });
+        return QuizStorage.table('Quiz Status').update(
+            existing.id,
+            {
+                'Quiz Status': quizStatus ? 'ENABLED' : 'DISABLED'
+            },
+            { typecast: true }
+        );
     } else {
         return createQuizStatus(email, quizStatus);
     }
@@ -101,7 +105,7 @@ export async function getResult(email: string) {
         .then(x => x[0]);
 }
 
-export type PartialArchetype = { id: number, name: string }
+export type PartialArchetype = { id: number; name: string };
 
 export async function createResult(email: string, archetype: PartialArchetype) {
     return QuizStorage.table('Quiz Status').create(

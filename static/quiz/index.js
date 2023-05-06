@@ -3,19 +3,28 @@ const API = 'https://api.radardao.xyz/quiz';
 const getEmail = () => localStorage.getItem('email');
 const setEmail = x => localStorage.setItem('email', x);
 
-const getQuizStatus = () => localStorage.get('quiz-status');
-const setQuizStatus = x => localStorage.set('quiz-status', x);
+const getQuizStatus = () => localStorage.getItem('quiz-status');
+const setQuizStatus = x => localStorage.setItem('quiz-status', x);
 
 const isReady = () => getEmail() && getQuizStatus() != null;
+
+function hideQuiz() {
+    $('.quiz').hide();
+    $('#see-results').hide();
+    $('#quiz-counter').hide();
+}
 
 (async function () {
     if (!isReady()) {
         $('.trickster-pop-up-wrapper').show();
     } else {
         $('.trickster-pop-up-wrapper').hide();
+        loadAnswers(await getRequest('/answers', { email: getEmail() }));
     }
 
-    loadAnswers(await getRequest('/answers', { email: getEmail() }));
+    if (getQuizStatus() === 'false') {
+        hideQuiz();
+    }
 })();
 
 function getRequest(path, query) {
@@ -41,21 +50,21 @@ function postRequest(path, body) {
 //#region Popup buttons
 async function handlePopupSelection(quizActivated) {
     // Check check if email was put in
-    const emailInput = $('#email').val(); // TODO: Change input id
+    const emailInput = $('#email').val();
     if (!emailInput) return;
 
     setEmail(emailInput);
-    setQuizStatus(quizActivated);
+    setQuizStatus(quizActivated ? 'true' : 'false');
 
     $('.trickster-pop-up-wrapper').hide(); // Hide popup
-    !quizActivated && $('.quiz').hide(); // Hide quiz
+    !quizActivated && hideQuiz();
 
     // Post set status for this email
     await postRequest('/status', { email: getEmail(), quizStatus: quizActivated });
 }
 
-$('#play-quiz').click(() => handlePopupSelection(true)); // TODO: Change input id
-$('#noplay-quiz').click(() => handlePopupSelection(false)); // TODO: Change input id
+$('#play-quiz').click(() => handlePopupSelection(true));
+$('#noplay-quiz').click(() => handlePopupSelection(false));
 
 /**
  *

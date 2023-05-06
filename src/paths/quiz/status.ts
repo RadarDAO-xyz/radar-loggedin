@@ -17,6 +17,8 @@ StatusRouter.post('/', async (req: StatusPostRequest, res) => {
     if (!('quizStatus' in req.body) || typeof req.body.quizStatus !== 'boolean')
         return res.status(400);
 
+    console.log('Quiz Status', req.body.email, req.body.quizStatus);
+
     await upsertQuizStatus(req.body.email, req.body.quizStatus);
 
     res.status(204);
