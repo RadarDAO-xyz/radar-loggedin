@@ -107,6 +107,8 @@ async function loadAnswers(answers) {
     });
     questionsAnswered = answers.length;
     updateQsAnswered(answers.length);
+
+    if (questionsAnswered == 10) $('#see-results').addClass('see-results-green');
 }
 
 function fetchArchetype() {
@@ -114,6 +116,7 @@ function fetchArchetype() {
 }
 
 function loadArchetype(result) {
+    if (questionsAnswered == 10) $('#see-results').addClass('see-results-green');
     $('.results-title').text(result.archetype.name);
     $('.results-description').text(result.archetype.description);
     $('.results-image').attr('src', result.archetype.image);
@@ -125,14 +128,22 @@ function loadArchetype(result) {
 }
 
 $('#see-results').click(async () => {
-    if (questionsAnswered == 10) loadArchetype(await fetchArchetype());
+    if (questionsAnswered == 10) {
+        $('.results-page').show();
+        loadArchetype(await fetchArchetype());
+    } else {
+        $('.results-page').hide();
+    }
 });
 
 $('.quiz-choice-wrapper')
     .children()
     .each(function () {
         const elem = $(this);
+        elem.css('cursor', 'pointer');
         elem.click(async () => {
+            elem.addClass('selected');
+            updateQsAnswered(questionsAnswered + 1);
             const answers = await postRequest('/answers', {
                 email: getEmail(),
                 question: resolveQuestionNumber(elem.parent().parent()),
