@@ -1,11 +1,14 @@
 export default class FrequencyCouter {
     public counter: Map<string, number>;
+    public totalCounted: number;
     constructor() {
         this.counter = new Map();
+        this.totalCounted = 0;
     }
 
     countUp(identifier: string) {
         this.counter.set(identifier, (this.counter.get(identifier) || 0) + 1);
+        this.totalCounted++;
     }
 
     sortAsc() {
@@ -15,5 +18,4 @@ export default class FrequencyCouter {
     sortDesc() {
         return [...this.counter.entries()].sort(([, freq], [, freq2]) => freq2 - freq);
     }
-
 }

@@ -22,8 +22,14 @@ import cors from 'cors';
 // Express Routers
 import SignalsRouter from './paths/signals';
 import JoinWaitlistRouter from './paths/joinWaitlist';
+import QuizRouter from './paths/quiz';
 
 const app = express();
+
+app.use((req, res, next) => {
+    console.log('Receiving', req.method, 'request at', req.originalUrl);
+    next();
+});
 
 app.use(cors());
 
@@ -36,8 +42,9 @@ app.use(
 );
 app.use('/static', express.static(path.join(__dirname, '../static')));
 
-app.use('/signals', SignalsRouter);
 app.use('/joinWaitlist', JoinWaitlistRouter);
+app.use('/quiz', QuizRouter);
+app.use('/signals', SignalsRouter);
 
 app.use((req, res) => {
     res.status(404).end('Not Found');
