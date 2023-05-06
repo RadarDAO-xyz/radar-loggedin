@@ -74,6 +74,8 @@ async function handlePopupSelection(quizActivated) {
 $('#play-quiz').click(() => handlePopupSelection(true));
 $('#noplay-quiz').click(() => handlePopupSelection(false));
 
+//#endregion
+
 /**
  *
  * @param {number} amount
