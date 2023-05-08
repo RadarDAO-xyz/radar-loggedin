@@ -47,7 +47,7 @@ function determineArchetype(percentages: AnswerFrequencies) {
 }
 
 ArchetypeRouter.get('/', async (req, res) => {
-    if (!req.query.email) return res.status(400);
+    if (!req.query.email) return res.status(400).end();
     const email = req.query.email.toString();
 
     // Fetch answers
