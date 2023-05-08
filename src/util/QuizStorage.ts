@@ -111,7 +111,8 @@ export function normalizeArchetype(archetype: Record<FieldSet>) {
         id: archetype.fields['Archetype ID'],
         name: archetype.fields['Archetype Name'],
         description: archetype.fields['Archetype Description'],
-        image: archetype.fields['Archetype Image URL']
+        image: archetype.fields['Archetype Image URL'],
+        url: archetype.fields['Archetype URL']
     };
 }
 

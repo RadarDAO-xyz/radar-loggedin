@@ -15,6 +15,7 @@ function hideQuiz() {
 }
 
 (async function () {
+    $('#see-results').hide();
     if (!isReady()) {
         $('.trickster-pop-up-wrapper').show();
     } else {
@@ -69,6 +70,7 @@ async function handlePopupSelection(quizActivated) {
 
     // Post set status for this email
     await postRequest('/status', { email: getEmail(), quizStatus: quizActivated });
+    loadAnswers(await getRequest('/answers', { email: getEmail() }));
 }
 
 $('#play-quiz').click(() => handlePopupSelection(true));
@@ -108,7 +110,7 @@ async function loadAnswers(answers) {
     questionsAnswered = answers.length;
     updateQsAnswered(answers.length);
 
-    if (questionsAnswered == 10) $('#see-results').addClass('see-results-green');
+    if (questionsAnswered == 10) $('#see-results').show();
 }
 
 function fetchArchetype() {
@@ -116,7 +118,15 @@ function fetchArchetype() {
 }
 
 function loadArchetype(result) {
-    if (questionsAnswered == 10) $('#see-results').addClass('see-results-green');
+    if (questionsAnswered == 10) $('#see-results').show();
+    const url = new URL('https://twitter.com/intent/tweet');
+    url.searchParams.set('url', 'https://www.play.radardao.xyz/');
+    url.searchParams.set(
+        'text',
+        `I'm living a more play-full future with RADAR and I'm the ${result.archetype.name}\n\nRead the report to find your character and collect!`
+    );
+    $('#result-share-button').attr('href', url.toString());
+    $('#result-collect-button').attr('href', result.archetype.url);
     $('.results-title').text(result.archetype.name);
     $('.results-description').text(result.archetype.description);
     $('.results-image').attr('src', result.archetype.image);
