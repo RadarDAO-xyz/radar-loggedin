@@ -157,4 +157,38 @@ export async function upsertResult(email: string, archetype: PartialArchetype) {
     }
 }
 
+export type PartialAttachment = {
+    url: string;
+    filename: string;
+};
+
+export type PartialSubmission = {
+    name: string;
+    age?: number;
+    location: string;
+    task: string;
+    attachment?: PartialAttachment;
+};
+
+export async function createSubmission(submission: PartialSubmission) {
+    return QuizStorage.table('Wall of Play').create(
+        {
+            Name: submission.name,
+            Age: submission.age,
+            Location: submission.location,
+            Task: submission.task,
+            Attachment: [submission.attachment] as any
+        },
+        { typecast: true }
+    );
+}
+
+export async function getSubmissions(filterApproved = true) {
+    return QuizStorage.table('Wall of Play')
+        .select({
+            filterByFormula: filterApproved ? '{Approved} = TRUE()' : 'TRUE()'
+        })
+        .all();
+}
+
 export default QuizStorage;
