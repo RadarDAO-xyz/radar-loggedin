@@ -15,12 +15,6 @@
         }
     }
 
-    $('.community-generated-grid')
-        .css('display', 'flex')
-        .css('justify-content', 'center')
-        .css('flex-flow', 'wrap')
-        .css('gap', '10px');
-
     const API = 'https://api.radardao.xyz';
     $('.community-generated-content-item').hide();
     const submissions = await fetch(`${API}/quiz/wallofplay`).then(r => r.json());
@@ -38,7 +32,7 @@
                     .addClass('file-content')
                     .attr('src', submission.attachment.url);
             } else if (submission.attachment.type.startsWith('video')) {
-                mediaElement = $('<video></video>')
+                mediaElement = $('<video controls></video>')
                     .addClass('file-content')
                     .attr('src', submission.attachment.url);
             } else if (submission.attachment.type.startsWith('audio')) {

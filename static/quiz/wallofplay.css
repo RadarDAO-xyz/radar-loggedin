@@ -1,0 +1,10 @@
+.file-content {
+    max-width: 100%;
+}
+
+.community-generated-grid {
+    display: flex;
+    justify-content: center;
+    flex-flow: wrap;
+    gap: 10px;
+}
