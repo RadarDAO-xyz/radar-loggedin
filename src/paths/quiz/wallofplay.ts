@@ -8,6 +8,8 @@ import { existsSync } from 'fs';
 
 const tempFolder = path.join(process.cwd(), './.temp');
 
+if (existsSync(tempFolder)) rmdir(tempFolder).then(() => mkdir(tempFolder));
+
 setInterval(async () => {
     if (existsSync(tempFolder)) {
         await rmdir(tempFolder).catch();
