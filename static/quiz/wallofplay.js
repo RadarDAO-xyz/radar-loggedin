@@ -34,7 +34,7 @@
         let mediaElement = null;
         if (submission.attachment) {
             if (submission.attachment.type.startsWith('image')) {
-                mediaElement = $('<image></image>')
+                mediaElement = $('<img></img>')
                     .addClass('file-content')
                     .attr('src', submission.attachment.url);
             } else if (submission.attachment.type.startsWith('video')) {
