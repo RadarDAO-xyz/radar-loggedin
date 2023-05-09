@@ -1,4 +1,6 @@
 (async function () {
+    $('#task-2').children().first().attr('disabled', true).attr('selected', true).attr('hidden', true);
+
     const searcher = new URL(document.location).searchParams;
     if (searcher.has('success')) {
         $('#email-form').hide();
