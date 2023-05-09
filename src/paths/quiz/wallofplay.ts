@@ -24,6 +24,12 @@ interface WallOfPlayPostRequest extends Request {
     }>;
 }
 
+const SillyCache = new Map();
+
+setInterval(() => {
+    SillyCache.clear();
+}, 120_000); // 2 minutes
+
 WallOfPlayRouter.use(json());
 
 const allowedExtensions = [
@@ -40,6 +46,13 @@ const allowedExtensions = [
 ];
 
 WallOfPlayRouter.post('/', async (req: WallOfPlayPostRequest, res, next) => {
+    const failRedir = (x: string) =>
+        req.headers.origin +
+        `/community-generated-content?success=false&reason=${encodeURIComponent(x)}`;
+    const successRedir = req.headers.origin + '/community-generated-content?success=true';
+
+    const fail = (x: string) => res.redirect(failRedir(x));
+
     const form = formidable({
         multiples: true,
         uploadDir: tempFolder,
@@ -51,19 +64,22 @@ WallOfPlayRouter.post('/', async (req: WallOfPlayPostRequest, res, next) => {
             next(err);
             return;
         }
-        if (!fields.name || typeof fields.name !== 'string') return res.status(400).end();
-        if (fields.age && typeof fields.age !== 'string') return res.status(400).end();
-        if (fields.age && isNaN(fields.age as unknown as number)) return res.status(400).end();
-        if (!fields.location || typeof fields.location !== 'string') return res.status(400).end();
-        if (!fields.task || typeof fields.task !== 'string') return res.status(400).end();
-        if (Array.isArray(files.attachment)) return res.sendStatus(415);
+        if (!fields.name || typeof fields.name !== 'string') return fail('Missing name');
+        if (fields.age && typeof fields.age !== 'string') return fail('Invalid age');
+        if (fields.age && isNaN(fields.age as unknown as number)) return fail('Invalid age');
+        if (!fields.location || typeof fields.location !== 'string')
+            return fail('Missing location');
+        if (!fields.task || typeof fields.task !== 'string') return fail('Missing task');
+        if (Array.isArray(files.attachment)) return fail('Invalid attachment');
         if (
-            !files.attachment.originalFilename ||
+            (files.attachment && !files.attachment.originalFilename) ||
             !allowedExtensions.includes(
                 files.attachment.originalFilename?.split('.').pop() as string
             )
         )
-            return res.sendStatus(415);
+            return fail(
+                'Unsupported extension: ' + files.attachment.originalFilename?.split('.').pop()
+            );
         const submission: PartialSubmission = {
             name: fields.name,
             age: fields.age ? parseInt(fields.age) : undefined,
@@ -77,21 +93,32 @@ WallOfPlayRouter.post('/', async (req: WallOfPlayPostRequest, res, next) => {
                 : undefined
         };
         await createSubmission(submission);
+        res.redirect(successRedir);
         res.status(204).end();
     });
 });
 
 WallOfPlayRouter.get('/', async (req, res) => {
+    if (SillyCache.has(req.originalUrl)) {
+        console.log('Serving cached Wall of Play submissions');
+        return res.json(SillyCache.get(req.originalUrl)).end();
+    }
+
+    console.log('Fetching data for Wall of Play submissions from the Airtable');
+
     const submissions = await getSubmissions();
-    res.json(
-        submissions.map(x => ({
-            name: x.fields.Name,
-            age: x.fields.Age,
-            location: x.fields.Location,
-            task: x.fields.Task,
-            attachment: (x.fields.Attachment as Attachment[])?.[0]
-        }))
-    );
+
+    const data = submissions.map(x => ({
+        name: x.fields.Name,
+        age: x.fields.Age,
+        location: x.fields.Location,
+        task: x.fields.Task,
+        attachment: (x.fields.Attachment as Attachment[])?.[0]
+    }));
+
+    SillyCache.set(req.originalUrl, data);
+
+    res.json(data);
 });
 
 export default WallOfPlayRouter;
