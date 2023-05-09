@@ -9,6 +9,7 @@ import { existsSync } from 'fs';
 const tempFolder = path.join(__dirname, '../../../temp');
 
 if (existsSync(tempFolder)) rmdir(tempFolder).then(() => mkdir(tempFolder));
+else mkdir(tempFolder);
 
 setInterval(async () => {
     if (existsSync(tempFolder)) {
