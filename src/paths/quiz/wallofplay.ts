@@ -1,6 +1,6 @@
 import { Request, Router, json } from 'express';
 import formidable from 'formidable';
-import { mkdir, rmdir } from 'fs/promises';
+import { mkdir, rm } from 'fs/promises';
 import path from 'path';
 import { PartialSubmission, createSubmission, getSubmissions } from '../../util/QuizStorage';
 import { Attachment } from 'airtable';
@@ -8,12 +8,13 @@ import { existsSync } from 'fs';
 
 const tempFolder = path.join(__dirname, '../../../temp');
 
-if (existsSync(tempFolder)) rmdir(tempFolder).then(() => mkdir(tempFolder));
+if (existsSync(tempFolder))
+    rm(tempFolder, { recursive: true, force: true }).then(() => mkdir(tempFolder));
 else mkdir(tempFolder);
 
 setInterval(async () => {
     if (existsSync(tempFolder)) {
-        await rmdir(tempFolder).catch();
+        await rm(tempFolder, { recursive: true, force: true }).catch();
         await mkdir(tempFolder).catch();
     }
 }, 30 * 60 * 1000);
