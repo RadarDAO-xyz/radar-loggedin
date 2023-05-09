@@ -36,16 +36,20 @@ setInterval(() => {
 WallOfPlayRouter.use(json());
 
 const allowedExtensions = [
+    // Image
     'png',
     'jpg',
     'jpeg',
     'webp',
+    // Video
     'mp4',
     'mov',
     'webm',
+    // Audio
     'mp3',
     'wav',
-    'mpeg'
+    'mpeg',
+    'ogg'
 ];
 
 WallOfPlayRouter.post('/', async (req: WallOfPlayPostRequest, res, next) => {
