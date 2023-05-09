@@ -6,7 +6,7 @@ import { PartialSubmission, createSubmission, getSubmissions } from '../../util/
 import { Attachment } from 'airtable';
 import { existsSync } from 'fs';
 
-const tempFolder = path.join(process.cwd(), './.temp');
+const tempFolder = path.join(__dirname, '../../../.temp');
 
 if (existsSync(tempFolder)) rmdir(tempFolder).then(() => mkdir(tempFolder));
 
