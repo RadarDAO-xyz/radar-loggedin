@@ -8,7 +8,3 @@
     flex-flow: wrap;
     gap: 10px;
 }
-
-.community-generated-content-item {
-    height: fit-content;
-}
