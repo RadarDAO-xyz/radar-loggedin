@@ -41,6 +41,7 @@ app.use(
     })
 );
 app.use('/static', express.static(path.join(__dirname, '../static')));
+app.use('/temp', express.static(path.join(__dirname, '../temp')));
 
 app.use('/joinWaitlist', JoinWaitlistRouter);
 app.use('/quiz', QuizRouter);
