@@ -89,7 +89,7 @@ WallOfPlayRouter.post('/', async (req: WallOfPlayPostRequest, res, next) => {
             task: fields.task,
             attachment: files.attachment
                 ? {
-                    url: `https://api.radardao.xyz/.temp/${files.attachment.newFilename}`,
+                    url: `https://api.radardao.xyz/temp/${files.attachment.newFilename}`,
                     filename: files.attachment.originalFilename || files.attachment.newFilename
                 }
                 : undefined
