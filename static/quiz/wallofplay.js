@@ -70,10 +70,11 @@
     const submissions = await fetch(`${API}/quiz/wallofplay`).then(r => r.json());
     submissions.forEach(submission => {
         const element = $('.community-generated-content-item').first().clone();
-        element.children('.name').text(submission.name);
-        element.children('.age').text(submission.age);
-        element.children('.location').text(submission.location);
-        element.children('.question-or-task-selected').text(submission.task);
+        element.find('.name').text(submission.name);
+        if (submission.age) element.find('.age').text(submission.age);
+        else element.find('.age').hide();
+        element.find('.location').text(submission.location);
+        element.find('.question-or-task-selected').text(submission.task);
 
         let mediaElement = null;
         if (submission.attachment) {
@@ -96,7 +97,7 @@
             }
         }
 
-        if (mediaElement) element.children('.file-content').append(mediaElement); // TODO
+        if (mediaElement) element.find('.file-content').append(mediaElement); // TODO
         $('.community-generated-grid').append(element);
         element.show();
     });
