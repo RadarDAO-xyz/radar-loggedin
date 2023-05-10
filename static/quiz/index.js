@@ -11,7 +11,7 @@ const isReady = () => getEmail() && getQuizStatus() != null;
 function hideQuiz() {
     $('.quiz').hide();
     $('#see-results').hide();
-    $('#quiz-counter').hide();
+    $('#quiz-counter-box').hide();
     document.location.pathname = '/report-written-only';
 }
 
@@ -84,7 +84,7 @@ $('#noplay-quiz').click(() => handlePopupSelection(false));
  * @param {number} amount
  */
 const updateQsAnswered = amount => {
-    $('.quiz-questions-counter').children().first().text(`${amount}/10 Q's Answered`);
+    $('#quiz-counter-text').text(`${amount}/10 Q's Answered`);
 };
 
 function resolveAnswerLetter(elem) {
@@ -113,7 +113,7 @@ async function loadAnswers(answers) {
 
     if (questionsAnswered == 10) {
         $('#see-results').show();
-        $('#quiz-counter').hide();
+        $('#quiz-counter-box').hide();
     }
 }
 
@@ -124,7 +124,7 @@ function fetchArchetype() {
 function loadArchetype(result) {
     if (questionsAnswered == 10) {
         $('#see-results').show();
-        $('#quiz-counter').hide();
+        $('#quiz-counter-box').hide();
     }
     const url = new URL('https://twitter.com/intent/tweet');
     url.searchParams.set('url', 'https://www.play.radardao.xyz/');
