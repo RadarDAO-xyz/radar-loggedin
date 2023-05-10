@@ -3,8 +3,9 @@
 }
 
 .community-generated-grid {
-    display: flex;
-    justify-content: center;
-    flex-flow: wrap;
-    gap: 10px;
+    margin: auto;
+}
+
+.community-generated-content-item._1 {
+    width: 175px;
 }

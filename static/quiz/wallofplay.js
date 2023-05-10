@@ -1,5 +1,12 @@
 (async function () {
-    $('#task-2').children().first().attr('disabled', true).attr('selected', true).attr('hidden', true);
+    const API = 'https://api.radardao.xyz';
+
+    $('#task-2')
+        .children()
+        .first()
+        .attr('disabled', true)
+        .attr('selected', true)
+        .attr('hidden', true);
 
     const searcher = new URL(document.location).searchParams;
     if (searcher.has('success')) {
@@ -17,7 +24,48 @@
         }
     }
 
-    const API = 'https://api.radardao.xyz';
+    // eslint-disable-next-line no-undef
+    const instance = Bricks({
+        container: '.community-generated-grid',
+        packed: 'data-packed',
+        sizes: [
+            {
+                columns: 2,
+                gutter: 10
+            },
+            {
+                mq: '600px',
+                columns: 3,
+                gutter: 10
+            },
+            {
+                mq: '800px',
+                columns: 3,
+                gutter: 10
+            },
+            {
+                mq: '1000px',
+                columns: 3,
+                gutter: 10
+            },
+            {
+                mq: '1130px',
+                columns: 4,
+                gutter: 12
+            },
+            {
+                mq: '1400px',
+                columns: 5,
+                gutter: 12
+            },
+            {
+                mq: '1700px',
+                columns: 6,
+                gutter: 12
+            }
+        ]
+    }).resize(true);
+
     $('.community-generated-content-item').hide();
     const submissions = await fetch(`${API}/quiz/wallofplay`).then(r => r.json());
     submissions.forEach(submission => {
@@ -52,4 +100,6 @@
         $('.community-generated-grid').append(element);
         element.show();
     });
+    instance.pack();
+    setInterval(() => instance.pack(), 1000);
 })();
