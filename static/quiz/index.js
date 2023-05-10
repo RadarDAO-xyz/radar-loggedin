@@ -12,6 +12,7 @@ function hideQuiz() {
     $('.quiz').hide();
     $('#see-results').hide();
     $('#quiz-counter').hide();
+    document.location.pathname = '/report-written-only';
 }
 
 (async function () {
