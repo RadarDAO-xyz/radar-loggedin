@@ -81,7 +81,7 @@ $('#noplay-quiz').click(() => handlePopupSelection(false));
  */
 const updateQsAnswered = amount => {
     if (amount === 10) {
-        $('#quiz-counter-box').addClass('see-results');
+        $('#quiz-counter-box').addClass('green-background');
         $('#quiz-counter-text').text('See Results');
     } else {
         $('#quiz-counter-text').text(`${amount}/10 Q's Answered`);
