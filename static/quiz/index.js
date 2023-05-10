@@ -10,13 +10,11 @@ const isReady = () => getEmail() && getQuizStatus() != null;
 
 function hideQuiz() {
     $('.quiz').hide();
-    $('#see-results').hide();
     $('#quiz-counter-box').hide();
     document.location.pathname = '/report-written-only';
 }
 
 (async function () {
-    $('#see-results').hide();
     if (!isReady()) {
         $('.trickster-pop-up-wrapper').show();
     } else {
@@ -24,9 +22,7 @@ function hideQuiz() {
         loadAnswers(await getRequest('/answers', { email: getEmail() }));
     }
 
-    if (getQuizStatus() === 'false') {
-        hideQuiz();
-    }
+    if (getQuizStatus() === 'false') hideQuiz();
 })();
 
 function getRequest(path, query) {
@@ -84,7 +80,12 @@ $('#noplay-quiz').click(() => handlePopupSelection(false));
  * @param {number} amount
  */
 const updateQsAnswered = amount => {
-    $('#quiz-counter-text').text(`${amount}/10 Q's Answered`);
+    if (amount === 10) {
+        $('#quiz-counter-box').addClass('see-results');
+        $('#quiz-counter-text').text('See Results');
+    } else {
+        $('#quiz-counter-text').text(`${amount}/10 Q's Answered`);
+    }
 };
 
 function resolveAnswerLetter(elem) {
@@ -110,11 +111,6 @@ async function loadAnswers(answers) {
     });
     questionsAnswered = answers.length;
     updateQsAnswered(answers.length);
-
-    if (questionsAnswered == 10) {
-        $('#see-results').show();
-        $('#quiz-counter-box').hide();
-    }
 }
 
 function fetchArchetype() {
@@ -122,10 +118,6 @@ function fetchArchetype() {
 }
 
 function loadArchetype(result) {
-    if (questionsAnswered == 10) {
-        $('#see-results').show();
-        $('#quiz-counter-box').hide();
-    }
     const url = new URL('https://twitter.com/intent/tweet');
     url.searchParams.set('url', 'https://www.play.radardao.xyz/');
     url.searchParams.set(
@@ -144,7 +136,7 @@ function loadArchetype(result) {
     $('.percentage.artist').text(`${result.resultPs.e}%`);
 }
 
-$('#see-results').click(async () => {
+$('#quiz-counter-box').click(async () => {
     if (questionsAnswered == 10) {
         $('.results-page').show();
         loadArchetype(await fetchArchetype());
