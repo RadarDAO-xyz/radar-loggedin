@@ -122,7 +122,7 @@ function loadArchetype(result) {
     url.searchParams.set('url', 'https://www.play.radardao.xyz/');
     url.searchParams.set(
         'text',
-        `I'm living a more play-full future with RADAR and I'm the ${result.archetype.name}\n\nRead the report to find your character and collect!`
+        `I'm living a more play-full future with @RADARxyz and I got ${result.archetype.name}\n\nRead the report to find your character and collect!`
     );
     $('#result-share-button').attr('href', url.toString());
     $('#result-collect-button').attr('href', result.archetype.url);
