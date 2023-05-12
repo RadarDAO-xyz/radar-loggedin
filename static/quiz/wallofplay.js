@@ -88,7 +88,7 @@
                     .attr('src', submission.attachment.url);
             } else if (submission.attachment.type.startsWith('audio')) {
                 mediaElement = $(
-                    `<audio controls controlsList="nodownload"><source src="${submission.attachment.url}" type="audio/mpeg">Your browser does not support the audio element.</audio>`
+                    `<audio controls controlsList="nodownload"><source src="${submission.attachment.url}">Your browser does not support the audio element.</audio>`
                 ).addClass('file-content');
             } else {
                 mediaElement = $(`<a>${submission.attachment.filename}</a>`)
